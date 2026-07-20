@@ -1,11 +1,10 @@
 ```
-####.  .###.  #####  #####  .###.  #####
-#...#  #...#  #....  #....  #...#  ..#..
-#...#  #...#  #....  #....  #...#  ..#..
-####.  #...#  ####.  ####.  #####  ..#..
-#.#..  #...#  #....  #....  #...#  ..#..
-#..#.  #...#  #....  #....  #...#  ..#..
-#...#  .###.  #####  #####  #...#  #####
+██████╗    ██████╗   ███████╗  ███████╗   █████╗   ██╗
+██╔══██╗  ██╔═══██╗  ██╔════╝  ██╔════╝  ██╔══██╗  ██║
+██████╔╝  ██║   ██║  █████╗    █████╗    ███████║  ██║
+██╔══██╗  ██║   ██║  ██╔══╝    ██╔══╝    ██╔══██║  ██║
+██║  ██║  ╚██████╔╝  ███████╗  ███████╗  ██║  ██║  ██║
+╚═╝  ╚═╝   ╚═════╝   ╚══════╝  ╚══════╝  ╚═╝  ╚═╝  ╚═╝
 ```
 
 # Scrolling Web Site with VidTSX
@@ -13,6 +12,13 @@
 A [Claude Code](https://claude.com/claude-code) skill that turns "build me a
 site" into a real interview, then a real, production-grade animated website in
 TSX (React + TypeScript + Vite).
+
+![AERIE - a scroll-film site built with this skill](assets/aerie-demo.gif)
+
+> Above: **AERIE**, a demo built with this skill. The whole page is one
+> continuous cinematic shot - as you scroll, a live altimeter counts down the
+> thousand-meter descent from the cloud-tops to the lobby, and the film scrubs
+> frame-by-frame on a canvas.
 
 It is a **process, not a template**. Claude runs a short structured interview,
 pitches 2-3 named creative concepts, art-directs the world (palette, type,
@@ -27,10 +33,26 @@ Every build ships with a responsive sweep and a measured verification pass
 - **3D scenes** - react-three-fiber heroes or full-page 3D, with a real
   performance budget (instancing, mesh caps, 3-point lighting).
 - **Scroll-film sites** - the page as one continuous cinematic shot, scrubbed
-  by scroll.
+  by scroll (that's the AERIE demo above).
 
-TSX animation examples and further reference patterns (2D and 3D) live at
-**https://vidtsx.com**.
+## Example gallery
+
+Not sure what you want? The skill can offer concrete starting points and build
+from any of them. A curated catalog with seed prompts lives in
+[`references/example-gallery.md`](references/example-gallery.md):
+
+- **Logo & brand** - particle-converge reveal, glitch resolve, minimal fade
+- **Social CTAs** - follow / subscribe / link-in-bio motion
+- **Countdowns** - dramatic, New Year fireworks, launch 3-2-1
+- **Educational** - loop visualization, Pythagorean proof, binary counter, fractions
+- **Data & charts** - self-drawing bar / pie / line
+- **Typography** - kinetic type, quote reveal, typewriter
+- **Product reveals** - silhouette build, rotating shot, icon morph
+- **Gaming & retro** - Game Over / CRT, 8-bit character, achievement unlock
+- **Intros & outros** - channel intro, podcast wave, social outro
+- **3D scenes** - nature (orbiting windmill), first-person POV coaster, landing-to-ad
+
+More live TSX animation examples (2D and 3D) are at **https://vidtsx.com**.
 
 ## Installation
 
@@ -63,7 +85,8 @@ Claude will:
 1. **Interview you** - what you're building, brand assets or full creative
    freedom, which motion language (2D / 3D / scroll-film), the top-to-bottom
    visitor journey, the sections after the hero, and where it should go live.
-   Every question has a "you decide" option if you'd rather not choose.
+   Every question has a "you decide" option if you'd rather not choose, and it
+   can offer concrete examples from the gallery if you're unsure.
 2. **Pitch 2-3 named concepts** with a concrete walkthrough of what you'd
    actually see scrolling through each one, one marked as recommended.
 3. **Art-direct the world** - exact palette, a real type pairing, a logo

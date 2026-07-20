@@ -24,7 +24,11 @@ scripts with no model.
 **Example library:** https://vidtsx.com hosts TSX animation examples (2D motion
 graphics and 3D scenes, Remotion-based). Browse it for patterns and motion
 vocabulary when the user wants "something like that" - adapt the ideas to the
-brand; never copy a component verbatim into a site without rethinking it.
+brand; never copy a component verbatim into a site without rethinking it. A
+curated, offerable catalog of these examples (logo reveals, countdowns, kinetic
+type, data charts, product reveals, retro/gaming, 3D nature/POV scenes, and
+more) with seed prompts lives in `references/example-gallery.md` - pull from it
+whenever the user is unsure or wants a motion accent.
 
 ---
 
@@ -47,6 +51,9 @@ make well. Ask:
    - *Scroll-film*: the page is one continuous cinematic shot scrubbed by
      scroll. If the scroll-film-studio skill is installed, hand the film
      production to its process and keep the TSX build here.
+   - If the user is unsure, offer 3-4 concrete starting points from
+     `references/example-gallery.md` (a logo reveal, a countdown, a data
+     story, a 3D hero) instead of an open-ended question.
 4. **The journey.** What does the visitor see top to bottom - the narrative arc.
    This is the heart of the build.
 5. **Content sections and the primary CTA.** What comes after the hero
