@@ -102,6 +102,15 @@ Claude will:
 You can invoke it explicitly too, by name, in any Claude Code session that has
 the skill installed.
 
+## Follow RoeeAI
+
+Built and maintained by [RoeeAI](https://roeeaizman.com). New AI automation
+guides and carousels, in Hebrew, every week:
+
+- Instagram: [@roeeaiautomation](https://instagram.com/roeeaiautomation)
+- YouTube: [@roeea2](https://www.youtube.com/@roeea2)
+- Free guides: [roeeaizman.com/#guides](https://roeeaizman.com/#guides)
+
 ## License
 
 MIT - see [LICENSE](LICENSE).
