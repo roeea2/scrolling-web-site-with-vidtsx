@@ -109,6 +109,8 @@ guides and carousels, in Hebrew, every week:
 
 - Instagram: [@roeeaiautomation](https://instagram.com/roeeaiautomation)
 - YouTube: [@roeea2](https://www.youtube.com/@roeea2)
+- Science channel: [@RoeeAIScience](https://www.youtube.com/@RoeeAIScience)
+- HiTechPark channel: [@HiTechParkIL](https://www.youtube.com/@HiTechParkIL)
 - Free guides: [roeeaizman.com/#guides](https://roeeaizman.com/#guides)
 
 ## License
