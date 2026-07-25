@@ -6,12 +6,20 @@
 // After wiring it into og:/twitter: meta with ABSOLUTE production URLs,
 // prove it live: curl -sI https://<site>/og.jpg && curl -s https://<site> | grep og:image
 
-import puppeteer from "puppeteer-core";
 import fs from "node:fs";
 import os from "node:os";
 
 const [URL, OUTFILE, WAIT] = [process.argv[2], process.argv[3] || "public/og.jpg", +(process.argv[4] || 3500)];
 if (!URL) { console.error("usage: node capture-og.mjs <url> [outfile] [waitMs]"); process.exit(2); }
+
+let puppeteer;
+try {
+  ({ default: puppeteer } = await import("puppeteer-core"));
+} catch {
+  console.error("missing dependency: puppeteer-core.\nrun once: cd " +
+    new URL(".", import.meta.url).pathname + " && npm install");
+  process.exit(2);
+}
 
 const CHROME_CANDIDATES = {
   darwin: ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"],

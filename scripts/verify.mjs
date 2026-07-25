@@ -11,7 +11,6 @@
 // Plus a jank probe at 1440x900: rAF deltas during a scroll sweep, p95/max.
 // Exit code 1 on any failure. Requires: npm i puppeteer-core, a local Chrome.
 
-import puppeteer from "puppeteer-core";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -20,6 +19,15 @@ const URL = process.argv[2];
 const OUT = process.argv[3] || "./shots";
 if (!URL) { console.error("usage: node verify.mjs <url> [outdir]"); process.exit(2); }
 fs.mkdirSync(OUT, { recursive: true });
+
+let puppeteer;
+try {
+  ({ default: puppeteer } = await import("puppeteer-core"));
+} catch {
+  console.error("missing dependency: puppeteer-core.\nrun once: cd " +
+    new URL(".", import.meta.url).pathname + " && npm install");
+  process.exit(2);
+}
 
 const CHROME_CANDIDATES = {
   darwin: ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"],

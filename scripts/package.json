@@ -1,0 +1,9 @@
+{
+  "name": "vidtsx-site-skill-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Verification harness for the scrolling-web-site-with-vidtsx skill. Run 'npm install' here once.",
+  "dependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}
