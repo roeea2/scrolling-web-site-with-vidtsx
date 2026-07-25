@@ -90,11 +90,15 @@ for (const [w, h, name] of VIEWPORTS) {
 
   if (name === "phone") {
     const collisions = await page.evaluate(() => {
+      const vw = innerWidth, vh = innerHeight;
       const els = [...document.querySelectorAll("*")].filter((e) => {
         const s = getComputedStyle(e);
         const r = e.getBoundingClientRect();
-        return (s.position === "fixed" || s.position === "sticky") &&
+        const isChrome = (s.position === "fixed" || s.position === "sticky") &&
           r.width > 8 && r.height > 8 && s.visibility !== "hidden" && +s.opacity > 0.05;
+        // full-viewport sticky scenes (pinned scroll sections) are not chrome
+        const coversViewport = r.width >= vw * 0.9 && r.height >= vh * 0.6;
+        return isChrome && !coversViewport;
       });
       const out = [];
       for (let i = 0; i < els.length; i++)
