@@ -16,6 +16,10 @@ Technique: sticky stage, scroll progress p in [0,1]; act i owns the window
 the last 15%; slight scale 1.04 -> 1 while active.
 Pitfalls: never swap `display`; keep all acts mounted and toggle
 opacity/transform. Images must be preloaded or the first scrub stutters.
+Crossfade overlap: act i+1 must START its fade-in during act i's fade-out
+window (fade-in over [start_i+1 - 0.15w, start_i+1]), not at its own window
+start. Naive per-window ramping leaves a 15% dead zone where every act is at
+low opacity and the stage reads empty (seen on a real build, bakery film).
 
 ## 2. SVG stroke-draw on scroll
 
