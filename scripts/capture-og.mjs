@@ -8,16 +8,18 @@
 
 import fs from "node:fs";
 import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const [URL, OUTFILE, WAIT] = [process.argv[2], process.argv[3] || "public/og.jpg", +(process.argv[4] || 3500)];
-if (!URL) { console.error("usage: node capture-og.mjs <url> [outfile] [waitMs]"); process.exit(2); }
+const [TARGET, OUTFILE, WAIT] = [process.argv[2], process.argv[3] || "public/og.jpg", +(process.argv[4] || 3500)];
+if (!TARGET) { console.error("usage: node capture-og.mjs <url> [outfile] [waitMs]"); process.exit(2); }
 
 let puppeteer;
 try {
   ({ default: puppeteer } = await import("puppeteer-core"));
 } catch {
   console.error("missing dependency: puppeteer-core.\nrun once: cd " +
-    new URL(".", import.meta.url).pathname + " && npm install");
+    path.dirname(fileURLToPath(import.meta.url)) + " && npm install");
   process.exit(2);
 }
 
@@ -36,7 +38,7 @@ if (!chromePath) { console.error("Chrome not found. Set CHROME_PATH."); process.
 const browser = await puppeteer.launch({ executablePath: chromePath, headless: "new" });
 const page = await browser.newPage();
 await page.setViewport({ width: 1200, height: 630 });
-await page.goto(URL, { waitUntil: "networkidle0", timeout: 45000 });
+await page.goto(TARGET, { waitUntil: "networkidle0", timeout: 45000 });
 await page
   .waitForFunction("window.__ready === true", { timeout: 12000 })
   .catch(() => console.log("warn: __ready never fired, capturing anyway"));

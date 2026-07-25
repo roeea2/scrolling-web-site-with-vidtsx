@@ -14,10 +14,11 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const URL = process.argv[2];
+const TARGET = process.argv[2];
 const OUT = process.argv[3] || "./shots";
-if (!URL) { console.error("usage: node verify.mjs <url> [outdir]"); process.exit(2); }
+if (!TARGET) { console.error("usage: node verify.mjs <url> [outdir]"); process.exit(2); }
 fs.mkdirSync(OUT, { recursive: true });
 
 let puppeteer;
@@ -25,7 +26,7 @@ try {
   ({ default: puppeteer } = await import("puppeteer-core"));
 } catch {
   console.error("missing dependency: puppeteer-core.\nrun once: cd " +
-    new URL(".", import.meta.url).pathname + " && npm install");
+    path.dirname(fileURLToPath(import.meta.url)) + " && npm install");
   process.exit(2);
 }
 
@@ -67,7 +68,7 @@ const overflowProbe = `(() => {
 for (const [w, h, name] of VIEWPORTS) {
   const page = await browser.newPage();
   await page.setViewport({ width: w, height: h });
-  await page.goto(URL, { waitUntil: "networkidle0", timeout: 45000 });
+  await page.goto(TARGET, { waitUntil: "networkidle0", timeout: 45000 });
   await page
     .waitForFunction("window.__ready === true", { timeout: 12000 })
     .catch(() => console.log(`warn: __ready never fired @${name}, continuing`));
@@ -124,7 +125,7 @@ for (const [w, h, name] of VIEWPORTS) {
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 1440, height: 900 });
-  await page.goto(URL, { waitUntil: "networkidle0", timeout: 45000 });
+  await page.goto(TARGET, { waitUntil: "networkidle0", timeout: 45000 });
   await page
     .waitForFunction("window.__ready === true", { timeout: 12000 })
     .catch(() => {});
