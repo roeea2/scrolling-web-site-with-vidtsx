@@ -30,6 +30,13 @@ type, data charts, product reveals, retro/gaming, 3D nature/POV scenes, and
 more) with seed prompts lives in `references/example-gallery.md` - pull from it
 whenever the user is unsure or wants a motion accent.
 
+**Local source library:** 26 real VidTSX compositions live on disk at
+`~/documents/hermes_projects/vidtsx-library/`, indexed with pattern notes and
+port math in `references/example-library.md`. When the user's brief matches an
+entry, offer it by name in the interview and port from the actual source at
+build time (conversion rules are in that file's header). The .tsx sources are
+local-only: never commit or copy them into any repo or generated site.
+
 ---
 
 ## STEP 0 - The interview (batched, structured, step by step)
@@ -53,7 +60,10 @@ make well. Ask:
      production to its process and keep the TSX build here.
    - If the user is unsure, offer 3-4 concrete starting points from
      `references/example-gallery.md` (a logo reveal, a countdown, a data
-     story, a 3D hero) instead of an open-ended question.
+     story, a 3D hero) instead of an open-ended question. Better: when the
+     brief matches a local source entry in `references/example-library.md`,
+     offer THAT by name ("we have the source for X - want it as your sticky
+     scene?").
 4. **The journey.** What does the visitor see top to bottom - the narrative arc.
    This is the heart of the build.
 5. **Content sections and the primary CTA.** What comes after the hero
@@ -92,6 +102,10 @@ project's existing system). Key laws, in full in
 - Respect `prefers-reduced-motion` in every build.
 - Copy style: confident, concrete, zero fluff. Never use long dashes (em or
   en) anywhere - hyphens or rephrase.
+- Porting from the local VidTSX library: read the source .tsx first, extract
+  the motion math, apply the frame-to-live conversion rules in
+  `references/example-library.md`, and rethink it for the brand. Never paste a
+  library component into a site verbatim.
 
 ## STEP 3 - The responsive law (never skip)
 
