@@ -35,6 +35,21 @@ Every build ships with a responsive sweep and a measured verification pass
 - **Scroll-film sites** - the page as one continuous cinematic shot, scrubbed
   by scroll (that's the AERIE demo above).
 
+## What's inside
+
+```
+SKILL.md                          the process: interview, art-direct, build, verify, ship
+references/tsx-motion-law.md      the build law (rAF + refs, seeded random, spring accents, 3D budget)
+references/example-gallery.md     abstract idea menu with seed prompts
+references/example-library.md     catalog of 26 real VidTSX compositions, with port math
+references/motion-patterns.md     8 production-tested techniques, ready to port
+references/perf-playbook.md       jank sources and fixes (rAF deltas, max < 50ms)
+references/asset-pipeline.md      imagery sourcing, budgets, favicon + OG card checklist
+references/rtl-hebrew.md          Hebrew/RTL: font pairings, bidi rules, mirrored motion
+scripts/verify.mjs                full sweep: 5 viewports, RTL-safe overflow, jank probe, screenshots
+scripts/capture-og.mjs            real-hero OG card at 1200x630 with size budget
+```
+
 ## Example gallery
 
 Not sure what you want? The skill can offer concrete starting points and build
@@ -54,6 +69,17 @@ from any of them. A curated catalog with seed prompts lives in
 
 More live TSX animation examples (2D and 3D) are at **https://vidtsx.com**.
 
+### Motion library: real sources, real math
+
+If you own VidTSX example files, drop the .tsx sources into one folder outside
+any repo (e.g. `~/vidtsx-library/`) and tell Claude where they are. The catalog
+in [`references/example-library.md`](references/example-library.md) indexes 26
+compositions by filename - per-letter jump physics, packet-flow pipelines,
+before/after sliders, spring preset palettes - with the frame-to-live
+conversion rules for porting them into a site. Sources stay example-reference
+only: never committed, never pasted verbatim. No sources? The same techniques
+ship distilled in [`references/motion-patterns.md`](references/motion-patterns.md).
+
 ## Installation
 
 Copy (or clone) this repository into your Claude Code skills directory:
@@ -72,6 +98,13 @@ No API keys, accounts, or extra dependencies are required to use the skill
 itself. The sites it generates use plain Vite + React + TypeScript; Claude
 installs those per-project as needed.
 
+One optional setup, needed only for the verification scripts
+(`scripts/verify.mjs`, `scripts/capture-og.mjs`):
+
+```bash
+cd ~/.claude/skills/scrolling-web-site-with-vidtsx/scripts && npm install
+```
+
 ## Usage
 
 Just ask, in plain language, in any Claude Code session:
@@ -79,23 +112,29 @@ Just ask, in plain language, in any Claude Code session:
 > "Build me an animated site in TSX for my coffee brand"
 > "I want a scrolling website with 3D, interview me first"
 > "Make a motion site like the vidtsx.com examples"
+> "Build me a Hebrew site for my law firm" (full RTL, real Hebrew font pairing)
 
 Claude will:
 
-1. **Interview you** - what you're building, brand assets or full creative
+1. **Interview you** - what you're building, language and direction (English
+   LTR / Hebrew RTL / bilingual), brand assets or full creative
    freedom, which motion language (2D / 3D / scroll-film), the top-to-bottom
    visitor journey, the sections after the hero, and where it should go live.
    Every question has a "you decide" option if you'd rather not choose, and it
-   can offer concrete examples from the gallery if you're unsure.
+   can offer concrete examples from the gallery or the local motion library if
+   you're unsure.
 2. **Pitch 2-3 named concepts** with a concrete walkthrough of what you'd
    actually see scrolling through each one, one marked as recommended.
-3. **Art-direct the world** - exact palette, a real type pairing, a logo
-   lockup, before writing any code.
+3. **Art-direct the world** - exact palette, a real type pairing (with proven
+   Hebrew pairings for RTL builds), a logo lockup, before writing any code.
 4. **Build it** - a from-scratch TSX site following the motion and
-   performance laws in [`references/tsx-motion-law.md`](references/tsx-motion-law.md).
-5. **Verify it** - a responsive sweep across five viewports with zero
-   horizontal overflow, a measured jank test (p95/max frame time, not average
-   FPS), and a real Open Graph share card generated from the finished hero.
+   performance laws in [`references/tsx-motion-law.md`](references/tsx-motion-law.md),
+   porting motion from the example library when a concept calls for it.
+5. **Verify it** - `scripts/verify.mjs`: a responsive sweep across five
+   viewports with zero horizontal overflow (both edges, RTL-safe), a measured
+   jank test (p95/max frame time, not average FPS), fixed-chrome collision
+   checks, and an accessibility floor - plus a real Open Graph share card
+   captured from the finished hero.
 6. **Ship it** - to your own Vercel account on request, only after a
    pre-publish exposure check.
 

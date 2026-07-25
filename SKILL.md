@@ -6,11 +6,14 @@ description: >-
   discovers what they actually want, pitches 2-3 named concepts, art-directs the
   world, then builds a production site with 2D motion, 3D scenes (react-three-
   fiber), or a scroll-film - and never ships without the responsive sweep and
-  the verification harness. TSX animation examples live at https://vidtsx.com.
+  the verification harness (scripts/verify.mjs). Can port motion from a local
+  library of 26 cataloged VidTSX example compositions or from distilled pattern
+  references, and builds Hebrew/RTL sites with proper fonts, bidi rules, and
+  mirrored motion. TSX animation examples live at https://vidtsx.com.
   Trigger on "build me a site in tsx", "animated react site", "vidtsx site",
-  "interview me for a site", "3D landing page", "motion site", or any request
-  for a premium animated website in React/TSX. NOT for plain static brochure
-  pages or slide decks.
+  "interview me for a site", "3D landing page", "motion site", "Hebrew site",
+  "RTL website", or any request for a premium animated website in React/TSX.
+  NOT for plain static brochure pages or slide decks.
 ---
 
 # Scrolling Web Site with VidTSX
