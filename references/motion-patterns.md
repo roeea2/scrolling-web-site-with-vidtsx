@@ -20,6 +20,9 @@ Crossfade overlap: act i+1 must START its fade-in during act i's fade-out
 window (fade-in over [start_i+1 - 0.15w, start_i+1]), not at its own window
 start. Naive per-window ramping leaves a 15% dead zone where every act is at
 low opacity and the stage reads empty (seen on a real build, bakery film).
+Same rule at the entrance: act 0 starts at opacity 1 (the stage scrolls into
+view naturally); an intro ramp for act 0 just shows a blank stage after the
+pin (user-reported on the same build).
 
 ## 2. SVG stroke-draw on scroll
 
