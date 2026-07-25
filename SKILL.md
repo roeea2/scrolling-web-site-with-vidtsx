@@ -47,7 +47,10 @@ art-direct it yourself and keep moving. Never block on a design answer you can
 make well. Ask:
 
 1. **What are we building, and the one-line vibe?** Brand name, what it is,
-   the feeling. Offer to invent the brand entirely.
+   the feeling. Offer to invent the brand entirely. **Language and
+   direction:** English LTR, Hebrew RTL, or bilingual - asked up front
+   because it shapes fonts, layout, and every motion direction (see
+   `references/rtl-hebrew.md`).
 2. **Brand assets or full creative freedom?** Logo / colors / fonts / imagery,
    or you create the world.
 3. **Motion language - what kind of alive?**
@@ -80,7 +83,10 @@ recommended one and go.
 Commit before coding: exact palette hexes, a display+body type pairing with
 real character (never default system fonts), an inline-SVG logo lockup, motion
 feel, section rhythm. One distinct world per brand - never ship two brands that
-look like the same site.
+look like the same site. For Hebrew/RTL builds, choose from the Hebrew
+pairings in `references/rtl-hebrew.md` (Karantina + Rubik, Secular One +
+Assistant, Frank Ruhl Libre + Heebo, Suez One + Varela Round) - never Heebo
+for both display and body.
 
 ## STEP 2 - Build (TSX law)
 
@@ -100,6 +106,10 @@ project's existing system). Key laws, in full in
   objects, ~500 mesh budget, 3-point lighting, no post-processing passes -
   fake bloom with emissive materials and fog.
 - Respect `prefers-reduced-motion` in every build.
+- Hebrew/RTL builds: `dir="rtl"` + `lang="he"`, CSS logical properties,
+  mirrored motion directions (marquees, slides, arrows, progress bars), no
+  italics, descender-safe kinetic-type masks - the full RTL law is in
+  `references/rtl-hebrew.md`.
 - Copy style: confident, concrete, zero fluff. Never use long dashes (em or
   en) anywhere - hyphens or rephrase.
 - Porting from the local VidTSX library: read the source .tsx first, extract
@@ -115,7 +125,9 @@ A build is not done until this sweep passes, measured, not eyeballed:
    1920x1080.
 2. **Zero horizontal overflow** at every viewport, checked programmatically
    (`scrollWidth - innerWidth <= 0`) at multiple scroll depths (0%, 30%, 75%,
-   95%), not just at the top.
+   95%), not just at the top. On RTL builds, overflow escapes to the LEFT and
+   this check can read 0 while content is cut - also verify the left edge per
+   `references/rtl-hebrew.md`.
 3. **Fixed chrome collision check** on the smallest viewport - logos,
    nav, and readouts must not overlap; hide or collapse elements below
    600px rather than letting them collide.
