@@ -30,12 +30,17 @@ type, data charts, product reveals, retro/gaming, 3D nature/POV scenes, and
 more) with seed prompts lives in `references/example-gallery.md` - pull from it
 whenever the user is unsure or wants a motion accent.
 
-**Local source library:** 26 real VidTSX compositions live on disk at
-`~/documents/hermes_projects/vidtsx-library/`, indexed with pattern notes and
-port math in `references/example-library.md`. When the user's brief matches an
-entry, offer it by name in the interview and port from the actual source at
-build time (conversion rules are in that file's header). The .tsx sources are
-local-only: never commit or copy them into any repo or generated site.
+**Local source library (optional):** this skill can port motion from real
+VidTSX compositions. The sources are EXAMPLE REFERENCE ONLY: never commit
+them into any repo, never copy them verbatim into a site. On first run, if
+the user has VidTSX .tsx files, agree on one stable folder outside any repo
+(suggest `~/vidtsx-library/`) and remember it for future sessions.
+`references/example-library.md` catalogs 26 known compositions by filename
+with pattern notes and port math; it works with any copy of those files at
+the agreed path. `references/motion-patterns.md` distills the reusable
+techniques (scroll-film, stroke-draw, particle converge, jump physics,
+convergence grid, quickTo parallax, count-ups, packet flow) for builds that
+do not have the sources.
 
 ---
 
@@ -115,11 +120,16 @@ project's existing system). Key laws, in full in
 - Porting from the local VidTSX library: read the source .tsx first, extract
   the motion math, apply the frame-to-live conversion rules in
   `references/example-library.md`, and rethink it for the brand. Never paste a
-  library component into a site verbatim.
+  library component into a site verbatim. No sources on disk? Build from the
+  distilled techniques in `references/motion-patterns.md` instead.
+- Performance is a design constraint: before shipping, the build must pass
+  the jank bar in `references/perf-playbook.md` (rAF deltas, max < 50ms).
 
 ## STEP 3 - The responsive law (never skip)
 
-A build is not done until this sweep passes, measured, not eyeballed:
+A build is not done until this sweep passes, measured, not eyeballed.
+`scripts/verify.mjs` runs items 1-3 plus the jank probe and saves per-viewport
+screenshots; run it against the served production build.
 
 1. **Five viewports minimum**: 390x844, 768x1024, 1024x768, 1440x900,
    1920x1080.
@@ -134,6 +144,10 @@ A build is not done until this sweep passes, measured, not eyeballed:
 4. Fluid type via `clamp()`; grids collapse to one column below ~900px; wide
    content scrolls inside its own container, never the page body.
 5. Screenshot every major section at phone + desktop and actually look at them.
+6. **Accessibility floor**: sr-only text behind kinetic/canvas headlines
+   (decorative layers get `aria-hidden`), visible focus styles, contrast
+   floors (4.5:1 body, 3:1 large display type), alt text on every image.
+   The `prefers-reduced-motion` path from STEP 2 is part of this floor.
 
 ## STEP 4 - Verify and ship
 
@@ -143,9 +157,16 @@ A build is not done until this sweep passes, measured, not eyeballed:
 - **Jank test**: rAF deltas, judge p95/max (target max < 50ms), never average
   fps. A classic spike source: reading pixels back from a GPU-backed canvas
   every frame - sample from the decoded source image instead.
-- **OG card**: screenshot the real hero at 1200x630, < 300 KB, full
-  `og:` + `twitter:` tag set with **absolute** production URLs, then curl the
-  live og.jpg and grep the served HTML to prove it.
+- **OG card**: screenshot the real hero at 1200x630, < 300 KB
+  (`scripts/capture-og.mjs`), full `og:` + `twitter:` tag set with
+  **absolute** production URLs, then curl the live og.jpg and grep the served
+  HTML to prove it. Imagery budgets and the favicon/asset checklist live in
+  `references/asset-pipeline.md`.
+- **Defects found in verification**: fix them in parallel passes, one focused
+  pass per defect, each with a precise brief: the defect, the viewport, the
+  programmatic check that proves it, the acceptance bar, and screenshot proof
+  after the fix. Then re-run the full sweep: a fix that breaks another
+  viewport is not a fix.
 - **Security gate before any deploy**: run the exposure audit (secrets, PII,
   personal emails, EXIF, local paths) and only publish on PASS.
 - Deploy a lean build dir to the user's Vercel; report the production URL and

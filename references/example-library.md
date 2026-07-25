@@ -1,12 +1,13 @@
 # VidTSX example library - local sources with port notes
 
-26 Remotion TSX compositions live locally at:
+26 Remotion TSX compositions, cataloged by filename. The .tsx files
+themselves are EXAMPLE REFERENCE ONLY and live outside this repo at a path
+the user chooses on first run (suggest `~/vidtsx-library/`): never commit
+them, never paste them into a site. If the files are not present, build from
+`motion-patterns.md`, which distills the same techniques.
 
-`~/documents/hermes_projects/vidtsx-library/`
-
-This catalog is the committable index. The .tsx sources stay local (never
-commit them to the public repo). `example-gallery.md` is the abstract idea
-menu; THIS file is for when you want the real motion math behind an idea.
+This catalog is the committable index. `example-gallery.md` is the abstract
+idea menu; THIS file is for when you want the real motion math behind an idea.
 
 ## How to use during a build
 
@@ -74,8 +75,8 @@ Letters hop in from off-screen with parabolic arcs, squash-and-stretch, ground
 shadows, idle bounce; chaos glyphs drift behind; dust off the ground line.
 Signature math: `jumpArc(p) = -4p(1-p)`, `calcSquash` on min(p,1-p)*2,
 per-letter LETTER_DATA (delay, jumpCount, jumpDur, startSide, idleHF).
-Port: kinetic hero headline, time-driven rAF. PORTED to Meridian hero (see
-saas-meridian) - read that port as the reference conversion.
+Port: kinetic hero headline, time-driven rAF. The extracted technique is
+pattern #4 in `motion-patterns.md` (per-letter jump physics).
 
 ### ProfessionalLogoReveal_v1 (473L)
 buildUp -> reveal -> settle phases; glow pulse loop `(frame-revealEnd)%60`;
@@ -98,8 +99,8 @@ percent is the trick - feels real, costs nothing.
 ### TerminalInstallCTA_v1 (628L)
 Terminal window scale-in 0.9->1, typed command char-by-char, success check
 with 1.2 overshoot, dot-grid backdrop fade, particle burst on success.
-Port: install/quickstart section for dev tools. PORTED to Meridian (typewriter
-terminal) - reference conversion available.
+Port: install/quickstart section for dev tools. Ships in production as a
+typewriter terminal with per-line output reveals.
 
 ### CodeAnimation_v1 (519L)
 Code typing via frame -> char count (0 -> totalChars), THEMES presets for
@@ -133,8 +134,8 @@ the curve path math (sample y from x) is reusable for any path-follow.
 ### Sine_Wave_Visualization_v1 (468L)
 Wave draws progressively (phase sweep 0 -> 2pi over frames 50-295), axes and
 labels stagger in. Pure SVG.
-Port: any SVG line-draw-on-scroll (same math as floor-plan draws on Atelier
-Nord).
+Port: any SVG line-draw-on-scroll (same math as floor-plan draws; see
+pattern #2 in `motion-patterns.md`).
 
 ### Poll_Results_v1 (500L)
 Question entry -50->0, bars reveal staggered, winner pulse (opacity flashes
@@ -160,8 +161,9 @@ Port: parallax hero with a traveling focal object (car, bird, product).
 
 ### DataFlowPipeline_v1 (928L)
 Stages as nodes, packets flowing along connector lines, stage activation as
-packets arrive. PORTED to Relay (pm-relay) as hero + scroll-scrubbed journey
-scene - the reference conversion for packet-progress math.
+packets arrive.
+Port: hero loop or scroll-scrubbed journey scene. The extracted technique is
+pattern #8 in `motion-patterns.md` (packet-flow pipeline).
 
 ### SolarSystem_v1 (906L, r3f)
 Orbiting planets, per-planet camera focus via progress-driven radius/height
@@ -187,8 +189,8 @@ Port: milestone stat moment (users, sites, years).
 ### QuoteCard_v1 (960L)
 STYLE_PRESETS theming, card entry, word-by-word highlight
 (wordStartFrame + framesPerWord*0.8), rising particles 110->-10.
-Port: testimonial section with scroll-driven word highlight (same idiom as
-the Aurelia philosophy pin).
+Port: testimonial section with scroll-driven word highlight (pinned section,
+words light one by one with scroll p).
 
 ## Retro / playful
 
