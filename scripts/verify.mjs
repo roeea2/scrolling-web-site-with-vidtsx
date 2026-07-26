@@ -276,6 +276,44 @@ for (const [w, h, name] of VIEWPORTS) {
   await page.close();
 }
 
+// Stuck reveals. A .reveal/.rise element whose observer was never attached
+// sits at opacity 0 forever, and the section reads as "empty" rather than
+// broken. Critically this is INVISIBLE to ?jump= screenshots, because the
+// jump contract force-adds the reveal class - so it must be checked on a
+// real scroll, with no jump parameter.
+{
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 900 });
+  await page.goto(TARGET, { waitUntil: "networkidle0", timeout: 45000 });
+  await new Promise((r) => setTimeout(r, 2500));
+  const max = await page.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y < max; y += 450) {
+    await page.evaluate((v) => window.scrollTo(0, v), y);
+    await new Promise((r) => setTimeout(r, 170));
+  }
+  await new Promise((r) => setTimeout(r, 1500));
+
+  const stuck = await page.evaluate(() => {
+    const out = [];
+    for (const el of document.querySelectorAll("*")) {
+      const s = getComputedStyle(el);
+      if (+s.opacity >= 0.9) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 40 || r.height < 20) continue;
+      if (!(el.innerText || "").trim()) continue;
+      // only content that is gated behind a reveal/entrance class
+      if (!/reveal|rise|fade|enter|anim/i.test(String(el.className))) continue;
+      out.push(`${el.tagName.toLowerCase()}.${String(el.className).slice(0, 26)} (opacity ${s.opacity})`);
+    }
+    return [...new Set(out)].slice(0, 6);
+  });
+  const ok = stuck.length === 0;
+  if (!ok) failures++;
+  console.log(`${ok ? "PASS" : "FAIL"} reveals fire${ok ? "" : ":\n  " + stuck.join("\n  ") +
+    "\n  cause is usually a section whose IntersectionObserver was never attached"}`);
+  await page.close();
+}
+
 // Social card. A missing og:image fails silently - the page looks finished
 // and the link preview is blank wherever it gets shared.
 {
