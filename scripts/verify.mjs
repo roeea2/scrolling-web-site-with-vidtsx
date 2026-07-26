@@ -292,6 +292,25 @@ for (const [w, h, name] of VIEWPORTS) {
   const ok = missing.length === 0;
   if (!ok) failures++;
   console.log(`${ok ? "PASS" : "FAIL"} social card:${ok ? assetNote : " missing " + missing.join(", ")}`);
+
+  // House style: no em/en dashes in shipped copy. They survive review easily
+  // because they look like hyphens at small sizes, and they land in <title>
+  // and og: tags where they are hardest to spot.
+  const dashes = await page.evaluate(() => {
+    const hits = [];
+    const push = (where, s) => { if (/[–—]/.test(s)) hits.push(`${where}: ${s.trim().slice(0, 60)}`); };
+    push("title", document.title);
+    for (const m of document.querySelectorAll("meta[property^='og:'], meta[name^='twitter:'], meta[name='description']"))
+      push(m.getAttribute("property") || m.getAttribute("name"), m.getAttribute("content") || "");
+    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let n, seen = 0;
+    while ((n = walk.nextNode()) && seen < 6)
+      if (/[–—]/.test(n.nodeValue)) { hits.push(`text: ${n.nodeValue.trim().slice(0, 60)}`); seen++; }
+    return hits;
+  });
+  const dOk = dashes.length === 0;
+  if (!dOk) failures++;
+  console.log(`${dOk ? "PASS" : "FAIL"} no long dashes${dOk ? "" : ":\n  " + dashes.slice(0, 6).join("\n  ")}`);
   await page.close();
 }
 
