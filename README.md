@@ -13,7 +13,9 @@ A [Claude Code](https://claude.com/claude-code) skill that turns "build me a
 site" into a real interview, then a real, production-grade animated website in
 TSX (React + TypeScript + Vite).
 
-![AERIE - a scroll-film site built with this skill](assets/aerie-demo.gif)
+<!-- Hosted on the orphan `assets` branch, not in this tree, so installing the
+     skill never pulls the demo animation down with it. -->
+![AERIE - a scroll-film site built with this skill](https://raw.githubusercontent.com/roeea2/scrolling-web-site-with-vidtsx/assets/aerie-demo.gif)
 
 > Above: **AERIE**, a demo built with this skill. The whole page is one
 > continuous cinematic shot - as you scroll, a live altimeter counts down the

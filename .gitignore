@@ -5,3 +5,4 @@
 *.local
 scripts/node_modules/
 shots/
+assets/
