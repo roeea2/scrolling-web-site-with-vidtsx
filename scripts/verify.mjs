@@ -7,7 +7,10 @@
 // Checks, per viewport (390x844, 768x1024, 1024x768, 1440x900, 1920x1080):
 //   - horizontal overflow at 0/30/75/95% scroll depth, BOTH edges (RTL-safe)
 //   - fixed/sticky chrome collisions at the smallest viewport
-//   - section screenshots saved to outdir (default ./shots)
+//   - screenshots to outdir (default ./shots): every major section at phone
+//     and laptop, named in scroll order, plus a mid-scrub frame for any
+//     pinned scene taller than 1.5 viewports; top/mid only at the other
+//     three viewports, which are there to catch layout breakage
 // Plus, at 1440x900:
 //   - a jank probe: rAF deltas during a scroll sweep, p95/max
 //   - in-page anchors clear fixed/sticky chrome (needs scroll-padding-top)
@@ -120,12 +123,45 @@ for (const [w, h, name] of VIEWPORTS) {
     console.log(`${cOk ? "PASS" : "FAIL"} chrome collisions @phone: ${collisions.join("; ") || "none"}`);
   }
 
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await new Promise((r) => setTimeout(r, 600));
-  await page.screenshot({ path: path.join(OUT, `${name}-top.jpg`), type: "jpeg", quality: 82 });
-  await page.evaluate((y) => window.scrollTo(0, y), Math.round(max * 0.5));
-  await new Promise((r) => setTimeout(r, 600));
-  await page.screenshot({ path: path.join(OUT, `${name}-mid.jpg`), type: "jpeg", quality: 82 });
+  // Phone and laptop get a shot of EVERY major section, because that is what
+  // actually gets reviewed. Two shots of a 9000px scroll page is not a review.
+  // The other viewports exist to catch layout breakage, so top/mid is enough.
+  if (name === "phone" || name === "laptop") {
+    const stops = await page.evaluate(() => {
+      const cand = [...document.querySelectorAll("section, header, footer, main > div")];
+      const top = cand.filter((e) => !cand.some((o) => o !== e && o.contains(e)));
+      const out = [];
+      top.forEach((e, i) => {
+        const r = e.getBoundingClientRect();
+        if (r.height < 80) return;
+        const label = (e.id || String(e.className || "").split(/\s+/)[0] || e.tagName.toLowerCase())
+          .replace(/[^a-z0-9_-]/gi, "").slice(0, 18) || `s${i}`;
+        const y = Math.round(r.top + window.scrollY);
+        out.push({ label, y });
+        // a pinned/sticky scene is taller than the viewport and its interesting
+        // frame is mid-scrub, not at its top edge
+        if (r.height > window.innerHeight * 1.5)
+          out.push({ label: label + "-mid", y: y + Math.round(r.height / 2) });
+      });
+      return out.slice(0, 12);
+    });
+
+    let n = 0;
+    for (const s of stops) {
+      await page.evaluate((y) => window.scrollTo(0, y), s.y);
+      await new Promise((r) => setTimeout(r, 700));
+      const file = `${name}-${String(++n).padStart(2, "0")}-${s.label}.jpg`;
+      await page.screenshot({ path: path.join(OUT, file), type: "jpeg", quality: 82 });
+    }
+    console.log(`     ${n} section shots @${name}: ${stops.map((s) => s.label).join(", ")}`);
+  } else {
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await new Promise((r) => setTimeout(r, 600));
+    await page.screenshot({ path: path.join(OUT, `${name}-top.jpg`), type: "jpeg", quality: 82 });
+    await page.evaluate((y) => window.scrollTo(0, y), Math.round(max * 0.5));
+    await new Promise((r) => setTimeout(r, 600));
+    await page.screenshot({ path: path.join(OUT, `${name}-mid.jpg`), type: "jpeg", quality: 82 });
+  }
   await page.close();
 }
 

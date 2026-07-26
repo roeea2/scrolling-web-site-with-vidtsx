@@ -146,7 +146,11 @@ screenshots; run it against the served production build.
    600px rather than letting them collide.
 4. Fluid type via `clamp()`; grids collapse to one column below ~900px; wide
    content scrolls inside its own container, never the page body.
-5. Screenshot every major section at phone + desktop and actually look at them.
+5. Screenshot every major section at phone + desktop and **actually look at
+   them**. `scripts/verify.mjs` saves them in scroll order with the section
+   name, plus a mid-scrub frame for any pinned scene taller than 1.5
+   viewports - a sticky scene judged only at its top edge is not judged at
+   all. Reading the filenames is not reviewing: open the images.
 6. **Accessibility floor**: sr-only text behind kinetic/canvas headlines
    (decorative layers get `aria-hidden`), visible focus styles, contrast
    floors (4.5:1 body, 3:1 large display type), alt text on every image.
