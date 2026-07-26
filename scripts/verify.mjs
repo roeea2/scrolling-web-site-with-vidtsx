@@ -8,7 +8,11 @@
 //   - horizontal overflow at 0/30/75/95% scroll depth, BOTH edges (RTL-safe)
 //   - fixed/sticky chrome collisions at the smallest viewport
 //   - section screenshots saved to outdir (default ./shots)
-// Plus a jank probe at 1440x900: rAF deltas during a scroll sweep, p95/max.
+// Plus, at 1440x900:
+//   - a jank probe: rAF deltas during a scroll sweep, p95/max
+//   - in-page anchors clear fixed/sticky chrome (needs scroll-padding-top)
+//   - a heading text dump, so split/masked type missing its spaces is visible
+//     (that defect renders perfectly and screenshots cannot catch it)
 // Exit code 1 on any failure. Requires: npm i puppeteer-core, a local Chrome.
 
 import fs from "node:fs";
@@ -163,6 +167,76 @@ for (const [w, h, name] of VIEWPORTS) {
   const ok = jank.max < 50;
   if (!ok) failures++;
   console.log(`${ok ? "PASS" : "FAIL"} jank: p95=${jank.p95}ms max=${jank.max}ms (bar: max < 50ms)`);
+  await page.close();
+}
+
+// Anchor offset + heading text. Both are defects that render "correctly":
+// an anchor hidden under a sticky nav, and split type whose innerText lost
+// its spaces. Neither is visible in a screenshot.
+{
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 900 });
+  await page.goto(TARGET, { waitUntil: "networkidle0", timeout: 45000 });
+  await page.waitForFunction("window.__ready === true", { timeout: 12000 }).catch(() => {});
+  await new Promise((r) => setTimeout(r, 1200));
+
+  const headings = await page.evaluate(() =>
+    [...document.querySelectorAll("h1, h2, h3")]
+      .map((h) => h.innerText.replace(/\s+/g, " ").trim())
+      .filter(Boolean)
+      .slice(0, 12)
+  );
+  console.log("\nheading text (confirm the words are actually separated):");
+  for (const h of headings) console.log(`  "${h}"`);
+
+  // measure the tallest fixed/sticky bar pinned to the top of the viewport
+  const chromeH = await page.evaluate(() => {
+    let tallest = 0;
+    for (const e of document.querySelectorAll("*")) {
+      const s = getComputedStyle(e);
+      if (s.position !== "fixed" && s.position !== "sticky") continue;
+      if (s.visibility === "hidden" || +s.opacity < 0.05) continue;
+      const r = e.getBoundingClientRect();
+      // top-pinned bar: starts at the top edge, spans most of the width,
+      // and is short enough to be chrome rather than a pinned scene
+      if (r.top <= 2 && r.width >= innerWidth * 0.5 && r.height > 8 && r.height < innerHeight * 0.4)
+        tallest = Math.max(tallest, Math.round(r.height));
+    }
+    return tallest;
+  });
+
+  const anchors = await page.evaluate(() =>
+    [...new Set(
+      [...document.querySelectorAll('a[href^="#"]')]
+        .map((a) => a.getAttribute("href"))
+        .filter((h) => h && h.length > 1 && document.querySelector(h))
+    )]
+  );
+
+  if (!anchors.length || !chromeH) {
+    console.log(`SKIP anchor offset (anchors: ${anchors.length}, top chrome: ${chromeH}px)`);
+  } else {
+    const obscured = [];
+    for (const sel of anchors) {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await new Promise((r) => setTimeout(r, 250));
+      await page.evaluate((s) => document.querySelector(`a[href="${s}"]`).click(), sel);
+      await new Promise((r) => setTimeout(r, 900));
+      const top = await page.evaluate((s) => {
+        const el = document.querySelector(s);
+        const first = el.querySelector("h1,h2,h3,[class*=stat],[class*=tag]") || el;
+        return Math.round(first.getBoundingClientRect().top);
+      }, sel);
+      if (top < chromeH) obscured.push(`${sel} (content at ${top}px, chrome is ${chromeH}px)`);
+    }
+    const ok = obscured.length === 0;
+    if (!ok) failures++;
+    console.log(
+      `${ok ? "PASS" : "FAIL"} anchor offset (${anchors.length} anchors vs ${chromeH}px chrome): ` +
+      (obscured.join("; ") || "all clear")
+    );
+    if (!ok) console.log("  fix: html { scroll-padding-top: " + (chromeH + 24) + "px }");
+  }
   await page.close();
 }
 

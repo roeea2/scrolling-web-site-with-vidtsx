@@ -151,6 +151,16 @@ screenshots; run it against the served production build.
    (decorative layers get `aria-hidden`), visible focus styles, contrast
    floors (4.5:1 body, 3:1 large display type), alt text on every image.
    The `prefers-reduced-motion` path from STEP 2 is part of this floor.
+7. **Headings must read as text, not just render as pixels.** Split or masked
+   type (per-word masks, per-letter staggers) can look perfect while its
+   `innerText` is missing every space - screenshots cannot catch it. Read the
+   heading text dump from `scripts/verify.mjs` and confirm the words are
+   actually separated. Fix by emitting real space text nodes between the
+   spans, never by faking the gap with padding or margin.
+8. **In-page anchors must clear fixed chrome.** Any site with a sticky nav
+   and `href="#section"` links needs `scroll-padding-top` on `html` greater
+   than the nav height, or the anchor target lands underneath it.
+   `scripts/verify.mjs` checks this.
 
 ## STEP 4 - Verify and ship
 

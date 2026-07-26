@@ -35,6 +35,13 @@ automatically via unicode-range. Preconnect to fonts.gstatic.com.
 - **Descenders clip.** Final letters (ך ן ף ץ) descend below the baseline.
   Kinetic-type line masks (`overflow: hidden` on a line) need extra
   padding-bottom, roughly 0.12em, or descenders get guillotined.
+- **Masked words still need real spaces.** When each word sits in its own
+  `overflow: hidden` mask, it is tempting to separate them with
+  `padding-inline-end`. Do not: the rendered text then has no whitespace, so
+  the heading reads `משפטמסחרי.` to copy-paste, screen readers and crawlers
+  while looking perfect on screen. Emit a real space text node between the
+  masks (`{i > 0 && ' '}`) and use padding only for optical tuning. This
+  defect is invisible to screenshots - assert on `innerText`, not pixels.
 - **Letter-spacing** is safe on sans display faces, avoid on serif at body
   sizes.
 - **Bidi.** Latin brand names, numbers, and URLs inside Hebrew copy: wrap in
@@ -54,9 +61,16 @@ automatically via unicode-range. Preconnect to fonts.gstatic.com.
     `translateX(-p * dist)` in LTR becomes `translateX(p * dist)` in RTL, and
     the track starts at the inline-start (right) edge.
   - Scroll progress bars: `transform-origin: right`.
-  - Per-letter / per-word staggers keep DOM order (bidi handles the rest),
-    but entrance slides mirror: what entered from `translateX(-30px)` in LTR
-    enters from `translateX(30px)` in RTL.
+  - Per-letter / per-word staggers keep DOM order, but entrance slides
+    mirror: what entered from `translateX(-30px)` in LTR enters from
+    `translateX(30px)` in RTL.
+  - **Bidi does NOT rescue a split Latin wordmark.** Kinetic type splits text
+    into `display: inline-block` spans, and inline-blocks lay out in the
+    CONTAINER's direction - there is no text run left for the bidi algorithm
+    to reorder. So `'ROEEAI'.split('')` inside `dir="rtl"` renders `IAEEOR`.
+    Any per-character split of Latin content needs an explicit `dir="ltr"` on
+    the element doing the splitting. Hebrew splits are fine either way
+    (Hebrew has no shaping), which is what makes this easy to miss.
   - CTA arrows flip: "Visit site ->" points LEFT in RTL. Same for carousel
     chevrons and "continue" icons.
 - **Scroll-driven sticky scenes** (convergence grids, pinned word highlights)
@@ -70,6 +84,34 @@ automatically via unicode-range. Preconnect to fonts.gstatic.com.
 - **Bilingual sites:** content Hebrew RTL, latin brand mark stays LTR. One
   type system per script; the display Hebrew face leads, the Latin face
   appears only in the logo/brand lockup and code.
+
+## Build trap: never style direction with `:dir()`
+
+Vite's CSS minifier (lightningcss) downlevels `:dir()` for older browser
+targets by rewriting it into a language list:
+
+```
+.card:dir(rtl)   ->  .card:is(:lang(he),:lang(ar),:lang(fa), ...)
+.card:dir(ltr)   ->  .card:not(:lang(he),:lang(ar),:lang(fa), ...)
+```
+
+On a `lang="he"` document every element inherits `lang=he`, so the `rtl` rule
+matches EVERYTHING and the `ltr` rule matches NOTHING. It compiles clean, it
+looks correct in source, and it only shows up as wrong fonts and alignment on
+the elements that should have stayed LTR.
+
+Style on the `dir` attribute instead - no toolchain rewrites attribute
+selectors:
+
+```css
+.card-body[dir='rtl'] .card-name { font-family: 'Heebo', sans-serif; }
+.card-body[dir='ltr'] .card-name { text-align: left; }
+```
+
+Set `dir` explicitly from the data (`dir={isHebrew ? 'rtl' : 'ltr'}`) rather
+than relying on `dir="auto"`, so the CSS has something deterministic to match.
+This matters on any mixed-language page: a Hebrew site listing English titles,
+a bilingual portfolio, code blocks inside Hebrew prose.
 
 ## RTL overflow check (responsive sweep addition)
 
