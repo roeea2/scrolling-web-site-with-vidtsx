@@ -240,6 +240,61 @@ for (const [w, h, name] of VIEWPORTS) {
   await page.close();
 }
 
+// Social card. A missing og:image fails silently - the page looks finished
+// and the link preview is blank wherever it gets shared.
+{
+  const page = await browser.newPage();
+  await page.goto(TARGET, { waitUntil: "networkidle0", timeout: 45000 });
+
+  const meta = await page.evaluate(() => {
+    const get = (sel) => document.querySelector(sel)?.getAttribute("content")?.trim() || "";
+    return {
+      canonical: document.querySelector('link[rel="canonical"]')?.getAttribute("href") || "",
+      type: get('meta[property="og:type"]'),
+      title: get('meta[property="og:title"]'),
+      desc: get('meta[property="og:description"]'),
+      url: get('meta[property="og:url"]'),
+      image: get('meta[property="og:image"]'),
+      twCard: get('meta[name="twitter:card"]'),
+      twImage: get('meta[name="twitter:image"]'),
+      lang: document.documentElement.lang,
+      ogLocale: get('meta[property="og:locale"]'),
+    };
+  });
+
+  const missing = [];
+  for (const [k, label] of [["title", "og:title"], ["desc", "og:description"],
+    ["type", "og:type"], ["url", "og:url"], ["image", "og:image"],
+    ["twCard", "twitter:card"], ["canonical", "rel=canonical"]])
+    if (!meta[k]) missing.push(label);
+
+  // absolute URLs only - scrapers ignore relative ones
+  for (const [k, label] of [["url", "og:url"], ["image", "og:image"], ["twImage", "twitter:image"]])
+    if (meta[k] && !/^https?:\/\//i.test(meta[k])) missing.push(`${label} not absolute (${meta[k]})`);
+
+  if (/^he\b/i.test(meta.lang) && !meta.ogLocale) missing.push("og:locale (Hebrew site)");
+  if (meta.image && /\.webp(\?|$)/i.test(meta.image))
+    missing.push("og:image is WebP - LinkedIn/WhatsApp render it unreliably, use JPEG/PNG");
+
+  // the asset must actually ship: fetch og:image's path from the local build
+  let assetNote = "";
+  if (meta.image) {
+    try {
+      const p = new URL(meta.image).pathname;
+      const r = await page.evaluate(async (u) => {
+        try { const res = await fetch(u, { method: "HEAD" }); return res.status; } catch { return 0; }
+      }, new URL(p, TARGET).href);
+      if (r !== 200) missing.push(`og:image not in build (${p} -> ${r || "unreachable"})`);
+      else assetNote = ` asset ${p} 200`;
+    } catch { missing.push(`og:image is not a valid URL (${meta.image})`); }
+  }
+
+  const ok = missing.length === 0;
+  if (!ok) failures++;
+  console.log(`${ok ? "PASS" : "FAIL"} social card:${ok ? assetNote : " missing " + missing.join(", ")}`);
+  await page.close();
+}
+
 await browser.close();
 console.log(failures === 0 ? `\nALL PASS. screenshots in ${OUT}` : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

@@ -170,11 +170,16 @@ screenshots; run it against the served production build.
 - **Jank test**: rAF deltas, judge p95/max (target max < 50ms), never average
   fps. A classic spike source: reading pixels back from a GPU-backed canvas
   every frame - sample from the decoded source image instead.
-- **OG card**: screenshot the real hero at 1200x630, < 300 KB
-  (`scripts/capture-og.mjs`), full `og:` + `twitter:` tag set with
-  **absolute** production URLs, then curl the live og.jpg and grep the served
-  HTML to prove it. Imagery budgets and the favicon/asset checklist live in
-  `references/asset-pipeline.md`.
+- **OG / social card - MANDATORY, never optional.** Every site ships with a
+  social card and the full tag set. A link with no preview looks broken the
+  moment it is pasted into LinkedIn, WhatsApp, Slack or iMessage, which is
+  where these sites actually get shared. Screenshot the real hero at 1200x630,
+  < 300 KB (`scripts/capture-og.mjs`), then emit the complete `og:` +
+  `twitter:` set with **absolute** production URLs plus `rel="canonical"` -
+  the exact required list is in `references/asset-pipeline.md`. Keep the card
+  JPEG/PNG even on an all-WebP site: WhatsApp and LinkedIn render WebP
+  previews unreliably. `scripts/verify.mjs` FAILS the build if a required tag
+  is missing or the og:image does not resolve - do not ship around it.
 - **Defects found in verification**: fix them in parallel passes, one focused
   pass per defect, each with a precise brief: the defect, the viewport, the
   programmatic check that proves it, the acceptance bar, and screenshot proof

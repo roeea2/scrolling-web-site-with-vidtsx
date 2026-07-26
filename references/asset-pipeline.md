@@ -33,16 +33,46 @@ that breaks the launch.
   mark used in the nav, not a generic initial in a colored square (unless
   the brand IS an initial in a colored square).
 
-## OG / social card
+## OG / social card - MANDATORY on every site, every time
+
+No site ships without a social card. A link with no preview looks broken when
+it is pasted into LinkedIn, WhatsApp, Slack or iMessage - which is exactly
+where a portfolio or client site gets shared. `scripts/verify.mjs` fails the
+build if any of the required tags below is missing.
 
 - `public/og.jpg`, 1200x630, < 300 KB. Capture the real hero with
   `scripts/capture-og.mjs` instead of designing a separate card: the hero
   IS the brand.
-- Full meta set with ABSOLUTE production URLs: `og:title`,
-  `og:description`, `og:type`, `og:url`, `og:image`, plus
-  `twitter:card` = `summary_large_image`.
+- **Keep the card as JPEG or PNG, never WebP.** LinkedIn and WhatsApp render
+  WebP previews inconsistently or not at all. This holds even when every
+  other image on the site is WebP.
+
+Required tag set, all with ABSOLUTE production URLs (a relative `og:image`
+is ignored by every scraper):
+
+```html
+<link rel="canonical"        href="https://<site>/" />
+<meta property="og:type"        content="website" />
+<meta property="og:site_name"   content="<Brand>" />
+<meta property="og:title"       content="..." />
+<meta property="og:description" content="..." />
+<meta property="og:url"         content="https://<site>/" />
+<meta property="og:image"       content="https://<site>/og.jpg" />
+<meta property="og:image:width"  content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:title"       content="..." />
+<meta name="twitter:description" content="..." />
+<meta name="twitter:image"      content="https://<site>/og.jpg" />
+```
+
+Hebrew/RTL sites add `<meta property="og:locale" content="he_IL" />`.
+
 - Proof step (never skip): `curl -sI https://<site>/og.jpg` returns 200 and
   `curl -s https://<site> | grep og:image` shows the absolute URL.
+- **Moving to a custom domain?** Every absolute URL above has to move with
+  it. Tags left pointing at the old host keep serving previews from a domain
+  you may later retire.
 
 ## Hard-won lessons
 
