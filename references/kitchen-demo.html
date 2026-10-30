@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitchen recipes</title>
+<meta name="description" content="Proof page for references/kitchen.md: every vanilla recipe, live.">
+<!--
+  Proof page for references/kitchen.md. Every recipe in that file runs here,
+  in plain HTML/CSS/JS with no build step. Open it in a browser to show a
+  client the effects during the interview, or to check a recipe still works.
+  Techniques studied from dqnamo's Kitchen (https://www.dqnamo.com/kitchen),
+  rebuilt from scratch: no code from that site is copied here.
+-->
+<style>
+:root {
+  --ink: #171714; --paper: #f2efe9; --card: #fff; --muted: #6b675f;
+  --accent: #ff633f; --accent-deep: #b83a1d; --danger: #d93d1a;
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink); background: var(--paper);
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 40px 16px 96px; background: var(--paper); }
+header { max-width: 1120px; margin: 0 auto 28px; }
+header h1 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 40px); letter-spacing: -.02em; }
+header p { margin: 0; color: var(--muted); max-width: 60ch; }
+main { max-width: 1120px; margin: 0 auto; display: grid; gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
+.demo { position: relative; display: grid; place-items: center; gap: 14px; min-height: 300px;
+  padding: 48px 20px 24px; border-radius: 18px; background: var(--card);
+  box-shadow: 0 1px 0 rgb(0 0 0 / .05), 0 10px 30px rgb(0 0 0 / .04); overflow: hidden; }
+.demo > h2 { position: absolute; top: 14px; left: 18px; margin: 0; font-size: 11px;
+  font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; }
+.plain { font: inherit; font-size: 13px; padding: 7px 12px; border-radius: 9px; border: 1px solid #ddd8ce;
+  background: #faf8f4; color: var(--ink); cursor: pointer; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* 1. Tactile button ------------------------------------------------------ */
+.tactile { --depth: 6px; --r: 12px; --face: #4a4a46; --face-hi: #66655f; --edge: #292926; --label: #eeeeec;
+  position: relative; display: inline-grid; padding: 0 0 var(--depth); border: 0; background: none;
+  font: inherit; text-decoration: none; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.tactile::before { content: ""; position: absolute; inset: var(--depth) 0 0; border-radius: var(--r);
+  background: var(--edge); box-shadow: inset 0 -1px 0 rgb(0 0 0 / .45); }
+.tactile > span { position: relative; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px;
+  border-radius: var(--r); background: var(--face); color: var(--label); font-weight: 600;
+  box-shadow: inset 0 1px 0 var(--face-hi); transition: translate .15s var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .tactile:hover > span { translate: 0 2px; } }
+.tactile:active > span { translate: 0 var(--depth); }
+.tactile:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--r); }
+.tactile.is-brand { --face: var(--accent); --face-hi: #ff9578; --edge: var(--accent-deep); --label: #fff; }
+
+/* 2. Scramble text ------------------------------------------------------- */
+.scr { display: inline-grid; }
+.scr > span { grid-area: 1 / 1; }
+.scr-fx { width: 0; min-width: 100%; height: 0; min-height: 100%; overflow: clip; white-space: nowrap; }
+.scr.is-scrambling .scr-real { color: transparent; }
+.code { font: 600 clamp(18px, 2.4vw, 22px)/1.3 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .02em; }
+.headline { margin: 0; font-size: 30px; font-weight: 750; letter-spacing: -.02em; text-align: center; }
+
+/* 3. Signature ----------------------------------------------------------- */
+.sig { width: min(100%, 300px); color: #1f3a8a; overflow: visible; }
+.sig path { fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1 2; stroke-dashoffset: 1.01; }
+.sig.is-in path { animation: sig-draw 2.6s cubic-bezier(.2, .2, .8, .9) forwards; }
+@keyframes sig-draw { to { stroke-dashoffset: 0; } }
+
+/* 4. Logo trace loader --------------------------------------------------- */
+.trace { width: 64px; height: auto; color: var(--accent); overflow: visible; transition: color .25s; }
+.trace path { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.trace .trace-guide { opacity: .18; stroke-width: 2.5; }
+.trace .trace-run { fill: currentColor; fill-opacity: 0; stroke-dasharray: .16 .84;
+  animation: trace-loop .7s linear infinite; transition: fill-opacity .2s ease-out; }
+@keyframes trace-loop { to { stroke-dashoffset: -1; } }
+.trace.is-closing .trace-run { animation: trace-close .5s linear forwards; }
+@keyframes trace-close { from { stroke-dasharray: .16 .84; } to { stroke-dasharray: 1 0; } }
+.trace.is-done { color: var(--ink); }
+.trace.is-done .trace-run { fill-opacity: 1; }
+
+/* 5. Iridescent foil ----------------------------------------------------- */
+.foil { --shift: 0%; --mx: 50%; --my: 50%; --angle: 120deg;
+  position: relative; isolation: isolate; overflow: hidden; contain: paint;
+  width: min(100%, 280px); aspect-ratio: 1.586; border-radius: 16px; padding: 18px;
+  display: grid; align-content: space-between; color: #26262a;
+  background: linear-gradient(135deg, #efefef, #d9d9d9 42%, #c9c9cb 70%, #ebebeb);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .5), 0 14px 30px rgb(0 0 0 / .12); }
+.foil::before, .foil::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+.foil::before { z-index: -1; filter: saturate(1.3);
+  background: linear-gradient(110deg, transparent 22%, rgb(0 214 255 / .34) 30%, rgb(110 255 190 / .3) 37%,
+    rgb(255 236 96 / .26) 44%, rgb(255 84 182 / .32) 52%, rgb(146 100 255 / .34) 60%, rgb(60 128 255 / .26) 66%, transparent 74%);
+  background-size: 320% 100%; background-position: var(--shift) 50%; }
+.foil::after { mix-blend-mode: screen;
+  background:
+    radial-gradient(circle at var(--mx) var(--my), rgb(255 255 255 / .55), rgb(255 255 255 / .12) 18%, transparent 42%),
+    linear-gradient(var(--angle), transparent 30%, rgb(255 255 255 / .35) 45%, transparent 58%);
+  background-size: 100% 100%, 220% 100%;
+  background-position: 0 0, var(--shift) 50%; }
+.foil small { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
+.foil strong { font-size: 22px; letter-spacing: -.01em; }
+
+/* 6. Ticket -------------------------------------------------------------- */
+.ticket-wrap { width: min(100%, 210px);
+  filter: drop-shadow(0 1px 1px rgb(15 15 15 / .1)) drop-shadow(0 18px 26px rgb(15 15 15 / .13)); }
+.ticket { --notch: 12px; --stub: 27%; --tear: calc(100% - var(--stub));
+  display: grid; grid-template-rows: 1fr var(--stub); aspect-ratio: 5 / 9.5; border-radius: 14px;
+  color: #171714; background: linear-gradient(145deg, rgb(255 255 255 / .14), transparent 42%), var(--accent);
+  -webkit-mask: radial-gradient(circle var(--notch) at 0 var(--tear), #0000 98%, #000) left / 51% 100% no-repeat,
+                radial-gradient(circle var(--notch) at 100% var(--tear), #0000 98%, #000) right / 51% 100% no-repeat;
+          mask: radial-gradient(circle var(--notch) at 0 var(--tear), #0000 98%, #000) left / 51% 100% no-repeat,
+                radial-gradient(circle var(--notch) at 100% var(--tear), #0000 98%, #000) right / 51% 100% no-repeat;
+  transition: transform .22s var(--ease-out); }
+.ticket-body { position: relative; padding: 18px 18px 14px; display: grid; align-content: space-between; }
+.ticket-body::after { content: ""; position: absolute; inset-inline: calc(var(--notch) + 6px); bottom: 0;
+  border-bottom: 1.5px dashed currentColor; opacity: .35; }
+.ticket-stub { padding: 12px 18px; display: grid; align-content: center; gap: 2px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.ticket h3 { margin: 0; font-size: 26px; line-height: .95; letter-spacing: -.02em; }
+.ticket .dots { height: 70px; opacity: .9;
+  background: radial-gradient(circle, currentColor 1.6px, transparent 2.1px) 0 0 / 10px 10px;
+  -webkit-mask: radial-gradient(closest-side, #000 30%, #0000); mask: radial-gradient(closest-side, #000 30%, #0000); }
+
+/* 7. Stamp --------------------------------------------------------------- */
+.stamp-wrap { filter: drop-shadow(0 1px 1px rgb(15 15 15 / .12)) drop-shadow(0 12px 22px rgb(15 15 15 / .09)); }
+.stamp { --r: 5px; width: 150px; aspect-ratio: 4 / 5; padding: calc(var(--r) * 2.6); background: #fff;
+  -webkit-mask: radial-gradient(var(--r), #0000 98%, #000) round calc(var(--r) * -1.5) calc(var(--r) * -1.5) / calc(var(--r) * 3) calc(var(--r) * 3),
+                linear-gradient(#000 0 0) no-repeat 50% / calc(100% - var(--r) * 3) calc(100% - var(--r) * 3);
+          mask: radial-gradient(var(--r), #0000 98%, #000) round calc(var(--r) * -1.5) calc(var(--r) * -1.5) / calc(var(--r) * 3) calc(var(--r) * 3),
+                linear-gradient(#000 0 0) no-repeat 50% / calc(100% - var(--r) * 3) calc(100% - var(--r) * 3); }
+.stamp-art { position: relative; height: 100%; display: grid; align-content: space-between; padding: 8px; color: #fff;
+  background: radial-gradient(circle at 70% 30%, #ffd36b 0 14%, transparent 15%),
+              radial-gradient(120% 60% at 30% 100%, #2f6b4f 0 48%, transparent 49%),
+              radial-gradient(120% 70% at 85% 105%, #3f8763 0 50%, transparent 51%),
+              linear-gradient(#ff8a5c, #ffb37a); }
+.stamp-art b { font-size: 22px; line-height: 1; }
+.stamp-art span { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* 8. Scroll fade list ---------------------------------------------------- */
+.fade-list { --top: 0px; --bottom: 0px; width: min(100%, 260px); height: 220px; overflow-y: auto;
+  overscroll-behavior: contain; scrollbar-width: thin; border-radius: 12px; background: #f7f5f0;
+  -webkit-mask: linear-gradient(#0000, #000 var(--top), #000 calc(100% - var(--bottom)), #0000);
+          mask: linear-gradient(#0000, #000 var(--top), #000 calc(100% - var(--bottom)), #0000); }
+.fade-list ol { margin: 0; padding: 6px; list-style: none; }
+.fade-list li { padding: 9px 10px; border-radius: 8px; font-size: 14px; }
+.fade-list li:hover { background: #ece8df; }
+
+/* 9. Dynamic button ------------------------------------------------------ */
+.dyn { position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center;
+  height: 40px; padding: 0 18px; border: 0; border-radius: 11px; background: var(--ink); color: #fff;
+  font: inherit; font-weight: 600; white-space: nowrap; overflow: hidden; cursor: pointer;
+  transition: width .26s var(--ease-out), scale .15s var(--ease-out); }
+.dyn:active { scale: .97; }
+.dyn-stack { display: inline-grid; justify-items: center; }
+.dyn-stack > * { grid-area: 1 / 1; }
+.dyn-ghost { position: absolute; visibility: hidden; white-space: nowrap; }
+.dyn-in { animation: dyn-in .18s var(--ease-out) both; }
+.dyn-out { animation: dyn-out .18s var(--ease-out) both; }
+@keyframes dyn-in { from { opacity: 0; translate: 0 8px; } }
+@keyframes dyn-out { to { opacity: 0; translate: 0 -8px; } }
+
+/* 10. Hold to confirm + undo -------------------------------------------- */
+.hold { --hold: 1600ms; position: relative; isolation: isolate; overflow: hidden; min-width: 200px; height: 40px;
+  padding: 0 14px; border: 1px solid var(--danger); border-radius: 10px; background: #fff1ec; color: #a8290d;
+  font: inherit; font-weight: 600; cursor: pointer; touch-action: none; user-select: none;
+  -webkit-user-select: none; -webkit-touch-callout: none; }
+.hold-fill { position: absolute; inset: 0; display: grid; place-items: center; background: var(--danger); color: #fff;
+  clip-path: inset(0 100% 0 0); transition: clip-path .18s var(--ease-out); }
+[dir="rtl"] .hold-fill { clip-path: inset(0 0 0 100%); }
+.hold.is-holding .hold-fill { clip-path: inset(0); transition: clip-path var(--hold) linear; }
+.hold.is-done .hold-fill { clip-path: inset(0); transition: none; }
+.hold:focus-visible { outline: 2px solid var(--danger); outline-offset: 2px; }
+.undo { --undo: 5s; display: flex; align-items: center; gap: 12px; width: min(100%, 280px); padding: 6px 6px 6px 12px;
+  border-radius: 12px; background: #f4f1ea; font-size: 13px; }
+.undo p { margin: 0; flex: 1; }
+.undo button { position: relative; overflow: hidden; padding: 6px 12px; border: 1px solid #ddd8ce; border-radius: 8px;
+  background: #fff; font: inherit; cursor: pointer; }
+.undo button::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; background: currentColor; opacity: .35;
+  transform-origin: left; animation: undo-drain var(--undo) linear forwards; }
+@keyframes undo-drain { to { transform: scaleX(0); } }
+
+/* 11. Receipt printer ---------------------------------------------------- */
+.printer { width: 230px; }
+.printer-slot { position: relative; z-index: 1; height: 14px; border-radius: 7px; background: #1d1d1b;
+  box-shadow: inset 0 3px 4px rgb(0 0 0 / .6); }
+.receipt-clip { overflow: hidden; margin: -7px 12px 0; padding: 0 8px 24px;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / .1)) drop-shadow(0 8px 12px rgb(0 0 0 / .12)); }
+.receipt { --tooth: 14px; padding: 20px 16px 26px; background: #fffdf8; transform: translateY(-101%);
+  font: 12px/1.55 ui-monospace, "SF Mono", Menlo, monospace; color: #2a2925;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / var(--tooth) 100%;
+          mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / var(--tooth) 100%; }
+.receipt p { margin: 0; display: flex; justify-content: space-between; }
+.receipt hr { border: 0; border-top: 1px dashed #c9c4b8; margin: 8px 0; }
+
+/* 12. Magnetic drop zone ------------------------------------------------- */
+.magnet { display: grid; place-items: center; gap: 6px; width: min(100%, 270px); min-height: 170px; padding: 20px;
+  border: 1.5px dashed #cfc9bd; border-radius: 16px; background: #faf8f4; text-align: center; cursor: pointer;
+  translate: var(--mx, 0px) var(--my, 0px);
+  transition: translate .3s var(--spring), scale .3s var(--spring), border-color .2s, background-color .2s; }
+.magnet[data-state="near"] { scale: 1.01; border-color: #8fb0ff; background: #f1f5ff; }
+.magnet[data-state="over"] { scale: 1.025; border-color: #3b6cff; background: #e7eeff; }
+.magnet:focus-within { outline: 2px solid #3b6cff; outline-offset: 3px; }
+.magnet small { color: var(--muted); }
+
+/* 13. Card fan ----------------------------------------------------------- */
+.fan { --step: 7deg; --spread: clamp(22px, 6.5vw, 34px); --drop: 10px; --dir: 1;
+  display: grid; place-items: end center; height: 230px; width: 100%; margin: 0; padding: 0 0 26px; list-style: none; }
+[dir="rtl"] .fan { --dir: -1; }
+.fan > li { grid-area: 1 / 1; width: 100px; aspect-ratio: 5 / 7; transform-origin: 50% 100%;
+  translate: calc(var(--o) * var(--dir) * var(--spread) + var(--push, 0px)) calc(var(--a) * var(--drop));
+  rotate: calc(var(--o) * var(--dir) * var(--step));
+  transition: translate .35s var(--spring), rotate .35s var(--spring), scale .25s var(--ease-out); }
+.fan > li:is(:hover, :focus-within) { z-index: 10; scale: 1.04;
+  translate: calc(var(--o) * var(--dir) * var(--spread)) -36px; rotate: calc(var(--o) * var(--dir) * var(--step) * .3); }
+.fan > li:is(:hover, :focus-within) + li { --push: calc(22px * var(--dir)); }
+.fan > li:is(:hover, :focus-within) + li + li { --push: calc(11px * var(--dir)); }
+.fan > li:has(+ li:is(:hover, :focus-within)) { --push: calc(-22px * var(--dir)); }
+.fan > li:has(+ li + li:is(:hover, :focus-within)) { --push: calc(-11px * var(--dir)); }
+.fan a { display: grid; align-content: space-between; height: 100%; padding: 10px; border-radius: 10px;
+  background: #fff; color: var(--ink); text-decoration: none; font-weight: 650; font-size: 13px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / .08), 0 8px 18px rgb(0 0 0 / .1); }
+.fan a span:last-child { justify-self: end; font-size: 26px; color: var(--accent); }
+.fan a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 14. Cassette reels ----------------------------------------------------- */
+.cassette { --spin: 0deg; --p: 0; position: relative; width: min(100%, 270px); aspect-ratio: 1.58; border-radius: 16px;
+  background: linear-gradient(165deg, #373735, #20201f 52%, #0e0e0d);
+  box-shadow: 0 22px 40px rgb(0 0 0 / .22), inset 0 2px 1px rgb(255 255 255 / .18), inset 0 -3px 3px rgb(0 0 0 / .7); }
+.cassette-label { position: absolute; inset: 10% 8% 34%; border-radius: 8px; background: #f2ede2;
+  display: grid; align-content: start; padding: 6px 10px; font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+.cassette-window { position: absolute; inset: 34% 22% 40%; border-radius: 999px; background: #1b1a18; overflow: hidden;
+  box-shadow: inset 0 3px 8px rgb(0 0 0 / .6); }
+.pack { position: absolute; top: 50%; width: 62%; aspect-ratio: 1; border-radius: 50%; translate: -50% -50%;
+  background: repeating-radial-gradient(circle, #060606 0 2px, #191919 2px 4px); }
+.pack-l { left: 22%; scale: calc(1 - var(--p) * .4); }
+.pack-r { left: 78%; scale: calc(.6 + var(--p) * .4); }
+.reel { position: absolute; top: 50%; width: 26%; aspect-ratio: 1; border-radius: 50%; translate: -50% -50%;
+  rotate: var(--spin); background: repeating-conic-gradient(#e9e4d8 0 18deg, #b9b3a6 18deg 60deg);
+  -webkit-mask: radial-gradient(circle, #0000 22%, #000 24%); mask: radial-gradient(circle, #0000 22%, #000 24%); }
+.reel-l { left: 22%; } .reel-r { left: 78%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tactile > span, .dyn, .magnet, .fan > li, .ticket { transition: none; }
+  .sig path { stroke-dashoffset: 0; animation: none !important; }
+  .trace .trace-run { animation: none !important; stroke-dasharray: 1 0; }
+  .dyn-in, .dyn-out, .undo button::after { animation: none; }
+  .reel { rotate: 0deg; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Kitchen recipes</h1>
+  <p>Fourteen interaction studies rebuilt in vanilla HTML, CSS and JS, after dqnamo's Kitchen. Every block is the recipe from <code>references/kitchen.md</code>, running live.</p>
+</header>
+<main>
+
+<section class="demo" id="tactile">
+  <h2>Tactile button</h2>
+  <div class="row">
+    <a class="tactile is-brand" href="#tactile"><span>Book a visit</span></a>
+    <button class="tactile" type="button"><span>Call now</span></button>
+  </div>
+</section>
+
+<section class="demo" id="scramble">
+  <h2>Scramble text</h2>
+  <p class="headline"><span class="scr" data-scramble>Access granted</span></p>
+  <div class="row">
+    <code class="code">invite/<span class="scr" data-scramble aria-live="polite">7K4F-X8NV</span></code>
+    <button class="plain" type="button" id="regen">Regenerate</button>
+  </div>
+</section>
+
+<section class="demo" id="signature-demo">
+  <h2>Animated signature</h2>
+  <svg class="sig" data-sig viewBox="0 0 320 110" role="img" aria-label="Signed by the founder">
+    <path pathLength="1" d="M14 86 C40 30 62 18 70 34 C78 52 50 96 44 92 C38 88 70 40 92 46 C108 50 90 84 100 84 C112 84 120 58 132 60 C142 62 130 84 142 84 C156 84 160 52 176 56 C188 60 172 86 186 84 C204 82 214 48 230 54 C244 60 226 90 246 82 C262 76 280 64 306 66"/>
+  </svg>
+  <button class="plain" type="button" id="resign">Draw again</button>
+</section>
+
+<section class="demo" id="trace-demo">
+  <h2>Logo trace loader</h2>
+  <svg class="trace" viewBox="-4 -4 66 80" role="status" aria-label="Loading">
+    <path class="trace-guide" d="M38 2 L8 42 H28 L22 70 L54 26 H34 L42 2 Z"/>
+    <path class="trace-run" pathLength="1" d="M38 2 L8 42 H28 L22 70 L54 26 H34 L42 2 Z"/>
+  </svg>
+  <div class="row">
+    <button class="plain" type="button" id="trace-done">Finish loading</button>
+    <button class="plain" type="button" id="trace-reset">Reset</button>
+  </div>
+</section>
+
+<section class="demo" id="foil-demo">
+  <h2>Iridescent foil</h2>
+  <div class="foil" data-foil>
+    <small>Founding member</small>
+    <strong>No. 0042</strong>
+  </div>
+</section>
+
+<section class="demo" id="ticket-demo">
+  <h2>Ticket</h2>
+  <div class="ticket-wrap">
+    <article class="ticket" data-tilt aria-label="Ticket: Night Shift, 14 November, 21:00">
+      <div class="ticket-body">
+        <h3>Night<br>Shift</h3>
+        <div class="dots" aria-hidden="true"></div>
+        <span>14.11 / 21:00</span>
+      </div>
+      <div class="ticket-stub"><b>Admit one</b><span>Row F, seat 12</span></div>
+    </article>
+  </div>
+</section>
+
+<section class="demo" id="stamp-demo">
+  <h2>Stamp</h2>
+  <div class="stamp-wrap">
+    <div class="stamp" role="img" aria-label="Postage stamp: hills at sunset, 48">
+      <div class="stamp-art"><b>48</b><span>Since 1998</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="demo" id="fade">
+  <h2>Scroll fade list</h2>
+  <div class="fade-list" data-fade-list tabindex="0" aria-label="Service areas">
+    <ol>
+      <li>Tel Aviv</li><li>Ramat Gan</li><li>Givatayim</li><li>Holon</li><li>Bat Yam</li><li>Rishon LeZion</li>
+      <li>Rehovot</li><li>Ness Ziona</li><li>Yavne</li><li>Herzliya</li><li>Ra'anana</li><li>Kfar Saba</li>
+      <li>Petah Tikva</li><li>Modiin</li><li>Ashdod</li>
+    </ol>
+  </div>
+</section>
+
+<section class="demo" id="dynamic">
+  <h2>Dynamic button</h2>
+  <button class="dyn" type="button" id="dyn"><span class="dyn-stack"><span>Send</span></span><span class="dyn-ghost" aria-hidden="true"></span></button>
+  <small style="color: var(--muted)">Click to cycle: Send, Sending your request, Sent</small>
+</section>
+
+<section class="demo" id="hold-demo">
+  <h2>Hold to confirm + undo</h2>
+  <button class="hold" type="button" id="hold">
+    <span class="hold-label">Hold to cancel booking</span>
+    <span class="hold-fill" aria-hidden="true">Hold to cancel booking</span>
+  </button>
+  <div id="undo-slot" style="min-height: 44px; display: grid; place-items: center; width: 100%"></div>
+</section>
+
+<section class="demo" id="receipt-demo">
+  <h2>Receipt printer</h2>
+  <div class="printer">
+    <div class="printer-slot"></div>
+    <div class="receipt-clip">
+      <div class="receipt" id="receipt-paper" aria-hidden="true">
+        <p><b>ORDER 1042</b><span>30.10</span></p>
+        <hr>
+        <p><span>Panel upgrade</span><span>1,800</span></p>
+        <p><span>Smart switch x3</span><span>420</span></p>
+        <p><span>Site visit</span><span>0</span></p>
+        <hr>
+        <p><b>TOTAL</b><b>2,220</b></p>
+        <p style="justify-content: center; margin-top: 8px">THANK YOU</p>
+      </div>
+    </div>
+  </div>
+  <p role="status" id="receipt-status" style="margin: 0; font-size: 13px; color: var(--muted)">Ready</p>
+  <button class="plain" type="button" id="pay">Pay</button>
+</section>
+
+<section class="demo" id="magnet-demo">
+  <h2>Magnetic drop zone</h2>
+  <label class="magnet" data-magnet>
+    <input class="sr-only" type="file" accept="image/*,.pdf">
+    <b data-magnet-title>Drop a photo of your panel</b>
+    <small>or click to choose a file</small>
+  </label>
+</section>
+
+<section class="demo" id="fan">
+  <h2>Card fan</h2>
+  <ul class="fan" aria-label="Projects">
+    <li style="--o:-2; --a:2"><a href="#fan"><span>Kitchen</span><span>01</span></a></li>
+    <li style="--o:-1; --a:1"><a href="#fan"><span>Lighting</span><span>02</span></a></li>
+    <li style="--o:0; --a:0"><a href="#fan"><span>Panel</span><span>03</span></a></li>
+    <li style="--o:1; --a:1"><a href="#fan"><span>Garden</span><span>04</span></a></li>
+    <li style="--o:2; --a:2"><a href="#fan"><span>EV charger</span><span>05</span></a></li>
+  </ul>
+</section>
+
+<section class="demo" id="cassette-demo">
+  <h2>Cassette reels</h2>
+  <div class="cassette" data-deck aria-hidden="true">
+    <div class="cassette-label">SIDE A</div>
+    <div class="cassette-window">
+      <span class="pack pack-l"></span><span class="pack pack-r"></span>
+      <span class="reel reel-l"></span><span class="reel reel-r"></span>
+    </div>
+  </div>
+  <button class="plain" type="button" id="play">Play</button>
+</section>
+
+</main>
+
+<script>
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+const fine = matchMedia("(hover: hover) and (pointer: fine)");
+
+/* 2. Scramble text: the real text stays in the DOM (transparent while the
+   effect runs), so width is locked and crawlers and screen readers read it. */
+const GLYPHS = "-_~!@#$%^&*+=[]{}|;:<>?/";
+const graphemes = (s) => "Segmenter" in Intl
+  ? [...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(s)].map((g) => g.segment)
+  : [...s];
+function scramble(el, text = el.dataset.text ?? el.textContent.trim(), ms = 32) {
+  el.dataset.text = text;
+  let real = el.querySelector(".scr-real"), fx = el.querySelector(".scr-fx");
+  if (!real) {
+    el.textContent = "";
+    real = el.appendChild(document.createElement("span")); real.className = "scr-real";
+    fx = el.appendChild(document.createElement("span")); fx.className = "scr-fx"; fx.setAttribute("aria-hidden", "true");
+  }
+  real.textContent = text;
+  clearInterval(el._scr);
+  if (reduce.matches) { fx.textContent = ""; el.classList.remove("is-scrambling"); return; }
+  const parts = graphemes(text), step = Math.max(1, Math.ceil(parts.length / 48));
+  let shown = 0;
+  el.classList.add("is-scrambling");
+  const tick = () => {
+    fx.textContent = parts.map((c, i) => (i < shown || !c.trim() ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join("");
+    if (shown >= parts.length) { clearInterval(el._scr); el.classList.remove("is-scrambling"); fx.textContent = ""; }
+    shown += step;
+  };
+  tick();
+  el._scr = setInterval(tick, ms);
+}
+const scrIO = new IntersectionObserver((entries) => {
+  for (const e of entries) if (e.isIntersecting) { scramble(e.target); scrIO.unobserve(e.target); }
+});
+document.querySelectorAll("[data-scramble]").forEach((el) => scrIO.observe(el));
+const codes = ["7K4F-X8NV", "H3Q8-M7KA", "R6PF-Q2VX", "W9ND-K5TZ"];
+let codeIndex = 0;
+document.getElementById("regen").onclick = () =>
+  scramble(document.querySelector("#scramble code [data-scramble]"), codes[++codeIndex % codes.length]);
+
+/* 3. Signature: draw once in view. */
+const sig = document.querySelector("[data-sig]");
+new IntersectionObserver(([e], io) => { if (e.isIntersecting) { sig.classList.add("is-in"); io.disconnect(); } },
+  { threshold: .6 }).observe(sig);
+document.getElementById("resign").onclick = () => { sig.classList.remove("is-in"); sig.getBBox(); sig.classList.add("is-in"); };
+
+/* 4. Logo trace loader: loop until the work is done, close the stroke at the
+   next lap boundary, then fill. A timer covers hidden tabs, where animation
+   events may never fire. */
+function finishTrace(svg) {
+  const run = svg.querySelector(".trace-run");
+  const done = () => { clearTimeout(fallback); svg.classList.add("is-closing", "is-done"); svg.setAttribute("aria-label", "Loaded"); };
+  const fallback = setTimeout(done, 1600);
+  if (reduce.matches) return done();
+  run.addEventListener("animationiteration", () => {
+    svg.classList.add("is-closing");
+    run.addEventListener("animationend", done, { once: true });
+  }, { once: true });
+}
+const traceSvg = document.querySelector(".trace");
+document.getElementById("trace-done").onclick = () => finishTrace(traceSvg);
+document.getElementById("trace-reset").onclick = () => { traceSvg.classList.remove("is-closing", "is-done"); traceSvg.setAttribute("aria-label", "Loading"); };
+
+/* 5. Iridescent foil: one rAF writes CSS variables from scroll + pointer. */
+const foils = [...document.querySelectorAll("[data-foil]")];
+let foilRaf = 0, hot = null, px = .5, py = .5;
+function paintFoil() {
+  foilRaf = 0;
+  for (const el of foils) {
+    const r = el.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) continue;
+    const s = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height)));
+    const x = el === hot ? px : .5, y = el === hot ? py : .5;
+    el.style.setProperty("--shift", `${((s * .8 + (x - .5) * .2) * 100).toFixed(2)}%`);
+    el.style.setProperty("--angle", `${(100 + s * 80 + (x - .5) * 30).toFixed(1)}deg`);
+    el.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
+    el.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+  }
+}
+const scheduleFoil = () => { foilRaf ||= requestAnimationFrame(paintFoil); };
+if (!reduce.matches) {
+  addEventListener("scroll", scheduleFoil, { passive: true });
+  addEventListener("resize", scheduleFoil);
+  if (fine.matches) for (const el of foils) {
+    el.addEventListener("pointermove", (e) => {
+      const r = el.getBoundingClientRect();
+      hot = el; px = (e.clientX - r.left) / r.width; py = (e.clientY - r.top) / r.height; scheduleFoil();
+    });
+    el.addEventListener("pointerleave", () => { hot = null; scheduleFoil(); });
+  }
+}
+scheduleFoil();
+
+/* 6. Tilt (hover devices only). */
+if (fine.matches && !reduce.matches) {
+  for (const el of document.querySelectorAll("[data-tilt]")) {
+    el.addEventListener("pointermove", (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      el.style.transform = `perspective(1100px) rotateX(${(-y * 12).toFixed(2)}deg) rotateY(${(x * 12).toFixed(2)}deg) scale(1.02)`;
+    });
+    el.addEventListener("pointerleave", () => { el.style.transform = ""; });
+  }
+}
+
+/* 8. Scroll fade list: fades grow with the distance left to scroll. */
+for (const el of document.querySelectorAll("[data-fade-list]")) {
+  const MAX = 56;
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+    const rest = el.scrollHeight - el.clientHeight - el.scrollTop;
+    el.style.setProperty("--top", `${Math.min(MAX, el.scrollTop)}px`);
+    el.style.setProperty("--bottom", `${Math.min(MAX, Math.max(0, rest))}px`);
+  };
+  el.addEventListener("scroll", () => { raf ||= requestAnimationFrame(update); }, { passive: true });
+  new ResizeObserver(update).observe(el);
+}
+
+/* 9. Dynamic button: measure the next label in a hidden ghost, freeze the
+   current width, then transition to the new one while the labels swap. */
+function setButtonLabel(btn, text) {
+  const stack = btn.querySelector(".dyn-stack"), ghost = btn.querySelector(".dyn-ghost");
+  const current = stack.lastElementChild;
+  if (current.textContent === text) return;
+  const cs = getComputedStyle(btn);
+  ghost.textContent = text;
+  const to = Math.ceil(ghost.offsetWidth + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+    + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth));
+  btn.style.width = `${btn.offsetWidth}px`;
+  btn.offsetWidth; // commit the start width before transitioning
+  btn.style.width = `${to}px`;
+  current.className = "dyn-out";
+  current.setAttribute("aria-hidden", "true");
+  if (reduce.matches) current.remove();
+  else current.addEventListener("animationend", () => current.remove(), { once: true });
+  stack.append(Object.assign(document.createElement("span"), { textContent: text, className: "dyn-in" }));
+}
+const dyn = document.getElementById("dyn");
+const dynLabels = ["Send", "Sending your request", "Sent"];
+let dynIndex = 0;
+dyn.onclick = () => setButtonLabel(dyn, dynLabels[++dynIndex % dynLabels.length]);
+
+/* 10. Hold to confirm, then a timed undo. */
+function holdToConfirm(btn, onConfirm, resetAfter = 1800) {
+  const ms = parseFloat(getComputedStyle(btn).getPropertyValue("--hold")) || 1600;
+  let timer = 0, pointerId = null;
+  const start = () => {
+    if (timer || btn.classList.contains("is-done")) return;
+    btn.classList.add("is-holding"); btn.setAttribute("aria-busy", "true");
+    timer = setTimeout(done, ms);
+  };
+  const cancel = () => {
+    if (!timer) return;
+    clearTimeout(timer); timer = 0; pointerId = null;
+    btn.classList.remove("is-holding"); btn.removeAttribute("aria-busy");
+  };
+  const done = () => {
+    timer = 0; pointerId = null;
+    btn.classList.replace("is-holding", "is-done"); btn.removeAttribute("aria-busy");
+    onConfirm();
+    setTimeout(() => btn.classList.remove("is-done"), resetAfter);
+  };
+  btn.addEventListener("pointerdown", (e) => {
+    if (!e.isPrimary || e.button !== 0) return;
+    pointerId = e.pointerId; btn.setPointerCapture(pointerId); start();
+  });
+  btn.addEventListener("pointermove", (e) => {
+    if (e.pointerId !== pointerId) return;
+    const r = btn.getBoundingClientRect(), pad = 8;
+    if (e.clientX < r.left - pad || e.clientX > r.right + pad || e.clientY < r.top - pad || e.clientY > r.bottom + pad) cancel();
+  });
+  for (const type of ["pointerup", "pointercancel", "lostpointercapture", "blur"]) btn.addEventListener(type, cancel);
+  btn.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && !e.repeat) { e.preventDefault(); start(); }
+  });
+  btn.addEventListener("keyup", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cancel(); } });
+  btn.addEventListener("contextmenu", (e) => e.preventDefault()); // touch long-press menu
+}
+function showUndo(slot, message, onUndo, onExpire, seconds = 5) {
+  slot.innerHTML = "";
+  const box = Object.assign(document.createElement("div"), { className: "undo", role: "status" });
+  box.style.setProperty("--undo", `${seconds}s`);
+  const text = Object.assign(document.createElement("p"), { textContent: message });
+  const undo = Object.assign(document.createElement("button"), { type: "button", textContent: "Undo" });
+  box.append(text, undo);
+  slot.append(box);
+  const timer = setTimeout(() => { box.remove(); onExpire(); }, seconds * 1000);
+  undo.onclick = () => { clearTimeout(timer); box.remove(); onUndo(); };
+}
+const undoSlot = document.getElementById("undo-slot");
+holdToConfirm(document.getElementById("hold"), () =>
+  showUndo(undoSlot, "Booking cancelled", () => {}, () => {}));
+
+/* 11. Receipt printer: a stepped feed, one jerk per printed line. */
+function printReceipt(paper, lines = 8, ms = 1800) {
+  paper.getAnimations().forEach((a) => a.cancel());
+  if (reduce.matches) { paper.style.transform = "translateY(0)"; return Promise.resolve(); }
+  const frames = [];
+  for (let i = 0; i <= lines; i++) {
+    const y = { transform: `translateY(${(-101 + (101 * i) / lines).toFixed(2)}%)` };
+    frames.push(y);
+    if (i < lines) frames.push(y); // hold while the line prints
+  }
+  return paper.animate(frames, { duration: ms, easing: "linear", fill: "forwards" }).finished;
+}
+document.getElementById("pay").onclick = async () => {
+  const paper = document.getElementById("receipt-paper"), status = document.getElementById("receipt-status");
+  status.textContent = "Payment received, printing receipt";
+  await printReceipt(paper);
+  paper.removeAttribute("aria-hidden");
+  status.textContent = "Receipt printed";
+};
+
+/* 12. Magnetic drop zone: leans toward an incoming file drag. */
+const zone = document.querySelector("[data-magnet]");
+const zoneTitle = zone.querySelector("[data-magnet-title]");
+const RANGE = 180, PULL = 10;
+const isFileDrag = (e) => [...(e.dataTransfer?.types ?? [])].includes("Files");
+const resetMagnet = () => { zone.style.setProperty("--mx", "0px"); zone.style.setProperty("--my", "0px"); zone.dataset.state = ""; };
+addEventListener("dragover", (e) => {
+  if (!isFileDrag(e)) return;
+  const r = zone.getBoundingClientRect();
+  const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+  const gap = Math.hypot(Math.max(0, Math.abs(dx) - r.width / 2), Math.max(0, Math.abs(dy) - r.height / 2));
+  const near = Math.max(0, 1 - gap / RANGE), over = gap === 0;
+  const pull = over || reduce.matches ? 0 : near * PULL, d = Math.max(1, Math.hypot(dx, dy));
+  zone.style.setProperty("--mx", `${((dx / d) * pull).toFixed(2)}px`);
+  zone.style.setProperty("--my", `${((dy / d) * pull).toFixed(2)}px`);
+  zone.dataset.state = over ? "over" : near > 0 ? "near" : "";
+  zoneTitle.textContent = over ? "Let go to add it" : near > 0 ? "Bring it closer" : "Drop a photo of your panel";
+});
+addEventListener("drop", resetMagnet);
+addEventListener("dragend", resetMagnet);
+document.addEventListener("dragleave", (e) => { if (!e.relatedTarget) resetMagnet(); });
+zone.addEventListener("dragover", (e) => { if (isFileDrag(e)) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; } });
+zone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file) zoneTitle.textContent = `Added ${file.name}`;
+});
+zone.querySelector("input").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (file) zoneTitle.textContent = `Added ${file.name}`;
+});
+
+/* 14. Cassette reels: driven by a media clock. On a real site pass the
+   <audio> element; here a fake clock stands in so the page needs no file. */
+function bindDeck(deck, media) {
+  let raf = 0;
+  const sync = () => {
+    const p = media.duration ? media.currentTime / media.duration : 0;
+    if (!reduce.matches) deck.style.setProperty("--spin", `${((media.currentTime * 300) % 360).toFixed(1)}deg`);
+    deck.style.setProperty("--p", p.toFixed(4));
+    raf = media.paused ? 0 : requestAnimationFrame(sync);
+  };
+  return { start: () => { raf ||= requestAnimationFrame(sync); }, sync };
+}
+const fakeMedia = { currentTime: 0, duration: 40, paused: true, _t0: 0 };
+const deck = bindDeck(document.querySelector("[data-deck]"), new Proxy(fakeMedia, {
+  get: (m, k) => (k === "currentTime" && !m.paused ? Math.min(m.duration, (performance.now() - m._t0) / 1000) : m[k]),
+}));
+document.getElementById("play").onclick = (e) => {
+  if (fakeMedia.paused) {
+    fakeMedia._t0 = performance.now() - fakeMedia.currentTime * 1000; fakeMedia.paused = false;
+    e.target.textContent = "Pause"; deck.start();
+  } else {
+    fakeMedia.currentTime = Math.min(fakeMedia.duration, (performance.now() - fakeMedia._t0) / 1000);
+    fakeMedia.paused = true; e.target.textContent = "Play";
+  }
+};
+</script>
+</body>
+</html>

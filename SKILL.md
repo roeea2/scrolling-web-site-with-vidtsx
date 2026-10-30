@@ -1,19 +1,21 @@
 ---
 name: scrolling-web-site-with-vidtsx
 description: >-
-  Interview-first studio for building premium animated websites in TSX (React +
-  TypeScript + Vite). Runs a structured step-by-step interview so the user
-  discovers what they actually want, pitches 2-3 named concepts, art-directs the
-  world, then builds a production site with 2D motion, 3D scenes (react-three-
-  fiber), or a scroll-film - and never ships without the responsive sweep and
-  the verification harness (scripts/verify.mjs). Can port motion from a local
-  library of 26 cataloged VidTSX example compositions or from distilled pattern
-  references, and builds Hebrew/RTL sites with proper fonts, bidi rules, and
-  mirrored motion. TSX animation examples live at https://vidtsx.com.
-  Trigger on "build me a site in tsx", "animated react site", "vidtsx site",
-  "interview me for a site", "3D landing page", "motion site", "Hebrew site",
-  "RTL website", or any request for a premium animated website in React/TSX.
-  NOT for plain static brochure pages or slide decks.
+  Interview-first studio for premium animated websites in TSX (React +
+  TypeScript + Vite) and code-rendered brand videos. Interviews step by step,
+  pitches 2-3 named concepts, art-directs the world, builds 2D motion, 3D
+  (react-three-fiber) or a scroll-film, and never ships without the
+  scripts/verify.mjs sweep. Motion sources: 26 cataloged VidTSX
+  compositions, Magic UI (beams, grids, shiny text, marquees) and tactile
+  Kitchen components (pushable buttons, tickets, stamps, receipt printers,
+  holographic foil) as vanilla recipes. Turns the same art direction into
+  videos (brand films, explainers, logo stings) from the Opus 5.5 prompt
+  library, rendered to MP4 by scripts/render-video.mjs. Hebrew/RTL,
+  LocalBusiness JSON-LD, SEO checklist. Trigger on "build me
+  a site in tsx", "animated react site", "vidtsx site", "3D landing page",
+  "Hebrew site", "magic ui", "kitchen components", "brand video in code",
+  "html to mp4", or any premium animated React/TSX website. NOT for plain
+  static brochure pages or slide decks.
 ---
 
 # Scrolling Web Site with VidTSX
@@ -45,6 +47,40 @@ techniques (scroll-film, stroke-draw, particle converge, jump physics,
 convergence grid, quickTo parallax, count-ups, packet flow) for builds that
 do not have the sources.
 
+**Magic UI (modern component motion):** [magicui.design](https://magicui.design)
+(MIT) is a library of 75+ animated React components - border beams, animated
+beams, flickering grids, shiny and morphing text, marquees, globes, device
+mockups. `references/magicui.md` catalogs every component by job with brand
+pairings, says when to install vs port (SEO pages port to vanilla CSS/TS), and
+carries proven vanilla ports plus the LCP/CLS laws learned shipping them. Reach
+for it whenever a build should feel much more modern: pick 4-8 effects that
+tell the brand's story, never a pile of unrelated ones.
+
+**The Kitchen (tactile components):** [dqnamo.com/kitchen](https://www.dqnamo.com/kitchen)
+is a set of crafted interaction studies: a pushable button, a perforated
+ticket, a postage stamp, a receipt that prints, holographic foil, a card fan, a
+hold-to-confirm, a self-drawing signature. Where Magic UI adds light, the
+Kitchen adds material (paper, hardware, ink). `references/kitchen.md` catalogs
+all 15 by job and brand mood. It carries this skill's own tested vanilla
+recipes for 14 of them, and the license rule: the source repo has no LICENSE,
+so default to the recipes. `references/kitchen-demo.html` runs every recipe
+live, so open it to show a client. Pick 2-4 from one material world.
+
+**Videos from the same world (not only HyperFrames):** the
+[awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos)
+library holds 700+ prompts behind viral Opus 5.5 videos, written as code
+(Canvas, SVG, GSAP, Three.js). `references/opus-videos.md` covers four things:
+- How to search it, plus starting points by job (business explainer, logo
+  reveal, launch film, kinetic type, 3D scene).
+- The anatomy that makes those prompts work, and a brief template filled from
+  STEP 1.
+- The **render contract** (`__duration`, `__seek(t)`, `__ready`).
+- Engine choice: HyperFrames, Remotion, or this skill's own path.
+
+On this skill's own path, `scripts/render-video.mjs` renders any contract page
+to a frame-exact MP4 (puppeteer + ffmpeg), and `references/video-starter.html`
+is a working example.
+
 ---
 
 ## STEP 0 - The interview (batched, structured, step by step)
@@ -69,6 +105,15 @@ make well. Ask:
    - *Scroll-film*: the page is one continuous cinematic shot scrubbed by
      scroll. If the scroll-film-studio skill is installed, hand the film
      production to its process and keep the TSX build here.
+   - *Modern UI motion*: Magic UI components layered on any of the above -
+     offer 3-4 by name from the brand pairings in `references/magicui.md`
+     (for a trade: flickering LED grid, border beams as current, an animated
+     beam circuit for the process, sparks).
+   - *Tactile UI*: Kitchen pieces for the elements the site needs anyway -
+     offer 2-4 from one material world in `references/kitchen.md` (for a
+     trade: a pushable "Call now", a magnetic "send a photo" drop zone, a
+     receipt-printer quote confirmation). Open `references/kitchen-demo.html`
+     so the user can try them.
    - If the user is unsure, offer 3-4 concrete starting points from
      `references/example-gallery.md` (a logo reveal, a countdown, a data
      story, a 3D hero) instead of an open-ended question. Better: when the
@@ -80,6 +125,10 @@ make well. Ask:
 5. **Content sections and the primary CTA.** What comes after the hero
    (products / booking / manifesto / contact), plus socials.
 6. **Where does it go live?** Local only, or their Vercel.
+7. **A video from the same world?** A 15-30s brand film, logo sting,
+   explainer or social clip, rendered from code (see the video path after
+   STEP 4). Offer 2-3 starting points by job from `references/opus-videos.md`
+   and show their live remakes. Skip it if the user only wants the site.
 
 Then **pitch 2-3 named concepts** with concrete what-you-see walkthroughs
 (narrate the scroll, not a thesis one-liner). Mark one "(Recommended)". Build
@@ -125,8 +174,28 @@ project's existing system). Key laws, in full in
   `references/example-library.md`, and rethink it for the brand. Never paste a
   library component into a site verbatim. No sources on disk? Build from the
   distilled techniques in `references/motion-patterns.md` instead.
+- Magic UI components: port or install per `references/magicui.md` -
+  SEO-critical pages port to vanilla so every word stays in static HTML;
+  credit Magic UI in a source comment; never hide the LCP headline behind an
+  entrance animation; decorative layers use fixed offsets so font swaps
+  cannot shift layout.
+- Kitchen components: build from the recipes in `references/kitchen.md`.
+  - The real words stay in static HTML (a scramble only decorates them).
+  - Tilt and glare only on `(hover: hover) and (pointer: fine)`.
+  - Masked or clipped shapes take their shadow from a parent `drop-shadow`.
+  - A loader never gates LCP.
+  - Never put a hold-to-confirm on the primary CTA.
+  - Do not copy Kitchen source into a public repo: it has no license.
 - Performance is a design constraint: before shipping, the build must pass
   the jank bar in `references/perf-playbook.md` (rAF deltas, max < 50ms).
+- Structured data for every real business: the JSON-LD `@graph` in
+  `references/seo-schema.md`.
+  - The most specific `LocalBusiness` subtype, one business node with a stable
+    `@id`, kept in one source file that every page injects (never a second block).
+  - Built from one `ROOT` constant.
+  - It must match the visible page and the Google Business Profile.
+  - `FAQPage` is generated from the visible FAQ, and no reviews or claims are
+    ever invented.
 
 ## STEP 3 - The responsive law (never skip)
 
@@ -189,7 +258,53 @@ screenshots; run it against the served production build.
   programmatic check that proves it, the acceptance bar, and screenshot proof
   after the fix. Then re-run the full sweep: a fix that breaks another
   viewport is not a fix.
+- **Structured data**: `scripts/verify.mjs` parses every JSON-LD block and FAILS
+  on invalid JSON or an `@id` defined twice. Then check the live URL in Google's
+  Rich Results Test.
 - **Security gate before any deploy**: run the exposure audit (secrets, PII,
   personal emails, EXIF, local paths) and only publish on PASS.
 - Deploy a lean build dir to the user's Vercel; report the production URL and
   the audit verdict table.
+- **Once the real domain is live**, run the launch checklist in
+  `references/seo-schema.md`:
+  - Redirect old hosts to the canonical domain.
+  - Search Console: Domain property, sitemap, request indexing.
+  - Bing Webmaster Tools.
+  - An IndexNow ping from the deploy script.
+  - Links in from the Google Business Profile and socials.
+
+## Video path - animations and films from the same world (optional)
+
+Use it when the user wants a video (a brand film, logo sting, explainer, launch
+clip, social reel or OG video), whether alongside the site or on its own. Full
+detail is in `references/opus-videos.md`.
+
+1. **Pick the engine.**
+   - Code-rendered design is this skill's own path.
+   - Narration, captions, TTS or a long multi-scene edit go to the HyperFrames
+     skills if installed.
+   - A React team or a VidTSX composition goes to Remotion.
+   - Photoreal footage is an AI video model's job, not code.
+2. **Brief from the art direction.**
+   - Choose a starting point by job from the prompt library and watch its
+     remake.
+   - Fill the brief template with STEP 1's palette, fonts and logo: hard specs,
+     a one-line concept, a 1s hook, a beat grid, a banned list, a loop, and the
+     build contract.
+   - Adapt the borrowed prompt, never obey it, and credit its creator in the
+     composition.
+3. **Build one self-contained HTML composition** that implements
+   `__duration`, `__seek(t)` and `__ready`, with every frame a pure function of
+   `t` and seeded randomness. Start from `references/video-starter.html`.
+4. **Preview, then render.**
+   - `node scripts/render-video.mjs comp.html out.mp4 --size 1080x1920 --preview`
+     writes three stills: check the layout and the loop seam.
+   - Then render the full film, with `--audio` for a licensed track.
+   - Make a contact sheet with ffmpeg and actually look at it.
+5. **Same gate as a deploy:**
+   - Real claims only.
+   - No PII on screen.
+   - Metadata stripped (the renderer does this).
+   - Report the audit verdict.
+   - On the site, a video gets a poster, `muted playsinline loop` and the
+     reduced-motion pause, and never blocks LCP.

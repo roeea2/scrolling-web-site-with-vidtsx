@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video starter</title>
+<meta name="description" content="A 6-second brand sting that implements the render contract in references/opus-videos.md.">
+<!--
+  Starter composition for the code-to-video path (references/opus-videos.md).
+  Open it in a browser and it plays as a live loop; render it with
+    node scripts/render-video.mjs references/video-starter.html out.mp4 --size 1080x1080
+  and every frame comes out exact. Rules it demonstrates:
+  - every frame is a pure function of t (no Date.now, no Math.random, no state
+    carried between frames), so seeking anywhere draws the right picture;
+  - motion lands on a beat grid (BPM), the first second hooks, and the last
+    frame matches the first so the loop is seamless;
+  - one clock drives canvas and DOM alike.
+  Swap BRAND, the words and the timeline for the brand from STEP 1.
+-->
+<style>
+:root { --bg: #0e0e10; --ink: #f4f1ea; --accent: #ff633f; }
+html, body { margin: 0; height: 100%; background: var(--bg); }
+body { display: grid; place-items: center; overflow: hidden; }
+#stage { position: relative; flex: none; width: 1080px; height: 1080px; overflow: hidden; color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: radial-gradient(110% 85% at 50% 42%, #1b1b21, var(--bg)); }
+#fx { position: absolute; inset: 0; }
+.word { position: absolute; left: 0; right: 0; text-align: center; margin: 0;
+  font-size: 128px; font-weight: 850; letter-spacing: -.035em; line-height: 1; opacity: 0; will-change: transform, opacity; }
+.word.is-accent { color: var(--accent); }
+.mark { position: absolute; left: 0; right: 0; top: 400px; text-align: center; font-size: 120px; font-weight: 850; opacity: 0; }
+.end { position: absolute; left: 0; right: 0; top: 690px; text-align: center; opacity: 0; }
+.end h1 { margin: 0; font-size: 72px; font-weight: 800; letter-spacing: -.03em; }
+.end p { margin: 10px 0 0; font-size: 26px; letter-spacing: .18em; text-transform: uppercase; opacity: .7; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="fx" width="1080" height="1080"></canvas>
+  <p class="word" style="top: 300px">Ideas</p>
+  <p class="word" style="top: 430px">into</p>
+  <p class="word is-accent" style="top: 560px">motion.</p>
+  <div class="mark" aria-hidden="true">L</div>
+  <div class="end"><h1>Lumen</h1><p>Light, engineered</p></div>
+</div>
+<script>
+const DURATION = 6, BPM = 120, BEAT = 60 / BPM;
+const SIZE = 1080, CX = 540, LINE_Y = 720, RING_Y = 470, RING_R = 160;
+const ACCENT = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));          // 0..1 progress of t through [a, b]
+const lerp = (a, b, p) => a + (b - a) * p;
+const outCubic = (p) => 1 - (1 - p) ** 3;
+const inCubic = (p) => p ** 3;
+const inOutCubic = (p) => (p < .5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2);
+const outBack = (p) => 1 + 2.2 * (p - 1) ** 3 + 1.2 * (p - 1) ** 2;
+function mulberry32(a) {                                      // seeded: same particles every render
+  return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+const rand = mulberry32(42);
+const PARTICLES = Array.from({ length: 160 }, (_, i) => ({
+  x: rand() * SIZE, y: rand() * SIZE, delay: rand() * .18, angle: (i / 160) * Math.PI * 2, r: 2 + rand() * 2.5,
+}));
+
+const stage = document.getElementById("stage");
+const ctx = document.getElementById("fx").getContext("2d");
+const words = [...document.querySelectorAll(".word")];
+const mark = document.querySelector(".mark"), end = document.querySelector(".end");
+
+function seek(time) {
+  const t = ((time % DURATION) + DURATION) % DURATION;
+  const exit = inCubic(seg(t, 5.1, 5.8));                    // everything leaves before the loop point
+  ctx.clearRect(0, 0, SIZE, SIZE);
+
+  // 1. hook: a line draws out in the first half second, then folds to a point
+  const grow = outCubic(seg(t, 0, .45)), fold = inOutCubic(seg(t, 2.7, 3.1));
+  const half = 360 * grow * (1 - fold);
+  if (half > .5) {
+    ctx.strokeStyle = ACCENT; ctx.lineWidth = 6; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(CX - half, LINE_Y); ctx.lineTo(CX + half, LINE_Y); ctx.stroke();
+  }
+
+  // 2. words land on beats 1, 2 and 3, then lift away together
+  const lift = inOutCubic(seg(t, 2.6, 3.05));
+  words.forEach((el, i) => {
+    const on = BEAT * (i + 1), land = outBack(seg(t, on, on + .38));
+    el.style.opacity = (seg(t, on, on + .1) * (1 - lift)).toFixed(3);
+    el.style.transform = `translateY(${((1 - land) * 70 - lift * 140).toFixed(1)}px) scale(${(1.22 - .22 * land).toFixed(3)})`;
+  });
+
+  // 3. particles converge into a ring that pulses on every beat
+  const beatPhase = (t / BEAT) % 1, pulse = t > 3.6 ? Math.exp(-beatPhase * 7) : 0;
+  const radius = RING_R * (1 + .035 * pulse) * (1 + .7 * exit);
+  ctx.fillStyle = ACCENT;
+  for (const p of PARTICLES) {
+    const k = inOutCubic(seg(t, 3 + p.delay, 3.75 + p.delay));
+    const a = p.angle + t * .25;
+    const alpha = seg(t, 3 + p.delay, 3.15 + p.delay) * (1 - exit);
+    if (alpha <= 0) continue;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(lerp(p.x, CX + Math.cos(a) * radius, k), lerp(p.y, RING_Y + Math.sin(a) * radius, k), p.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // 4. the mark and end card settle in, then leave with everything else
+  const show = outCubic(seg(t, 3.5, 4)), card = outCubic(seg(t, 3.75, 4.3));
+  mark.style.opacity = (show * (1 - exit)).toFixed(3);
+  mark.style.transform = `scale(${(.85 + .15 * show + .04 * pulse).toFixed(3)})`;
+  end.style.opacity = (card * (1 - exit)).toFixed(3);
+  end.style.transform = `translateY(${((1 - card) * 30 - exit * 20).toFixed(1)}px)`;
+}
+
+// Render contract (read by scripts/render-video.mjs).
+window.__duration = DURATION;
+window.__seek = seek;
+document.fonts.ready.then(() => { window.__ready = true; });
+
+// Live playback when opened in a browser; the renderer sets __rendering.
+const fit = () => { stage.style.scale = Math.min(innerWidth / SIZE, innerHeight / SIZE, 1); };
+fit(); addEventListener("resize", fit);
+if (!window.__rendering) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) seek(4.4);
+  else {
+    const t0 = performance.now();
+    const loop = (now) => { seek((now - t0) / 1000); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
+} else seek(0);
+</script>
+</body>
+</html>

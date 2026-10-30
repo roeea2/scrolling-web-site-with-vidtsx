@@ -252,12 +252,27 @@ for (const [w, h, name] of VIEWPORTS) {
   if (!anchors.length || !chromeH) {
     console.log(`SKIP anchor offset (anchors: ${anchors.length}, top chrome: ${chromeH}px)`);
   } else {
+    // smooth scrollers (Lenis) keep easing after a fixed delay on long pages, so wait
+    // until scrollY holds still: a scroll left running skews the next anchor's reading
+    const settle = () => page.evaluate(() => new Promise((done) => {
+      let last = -1, still = 0, frames = 0;
+      const tick = () => {
+        const y = window.scrollY;
+        still = y === last ? still + 1 : 0;
+        last = y;
+        if (still >= 12 || ++frames > 360) done();
+        else requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }));
     const obscured = [];
     for (const sel of anchors) {
+      await settle();
       await page.evaluate(() => window.scrollTo(0, 0));
-      await new Promise((r) => setTimeout(r, 250));
+      await settle();
       await page.evaluate((s) => document.querySelector(`a[href="${s}"]`).click(), sel);
-      await new Promise((r) => setTimeout(r, 900));
+      await new Promise((r) => setTimeout(r, 300));
+      await settle();
       const top = await page.evaluate((s) => {
         const el = document.querySelector(s);
         const first = el.querySelector("h1,h2,h3,[class*=stat],[class*=tag]") || el;
@@ -385,6 +400,36 @@ for (const [w, h, name] of VIEWPORTS) {
   const dOk = dashes.length === 0;
   if (!dOk) failures++;
   console.log(`${dOk ? "PASS" : "FAIL"} no long dashes${dOk ? "" : ":\n  " + dashes.slice(0, 6).join("\n  ")}`);
+
+  // Structured data (references/seo-schema.md): every JSON-LD block must parse, and an
+  // @id may be *defined* only once. A second, thinner copy of the business node (the
+  // paste-a-snippet mistake) splits the entity Google is trying to merge. A node with
+  // nothing but @id/@type is a reference, not a definition.
+  const ld = await page.evaluate(() =>
+    [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent || ""));
+  const ldErr = [];
+  const types = new Set();
+  const defined = new Map();
+  const visit = (n) => {
+    if (Array.isArray(n)) return n.forEach(visit);
+    if (!n || typeof n !== "object") return;
+    if (n["@type"]) types.add([].concat(n["@type"]).join("/"));
+    const body = Object.keys(n).filter((k) => !["@id", "@type", "@context"].includes(k));
+    if (n["@id"] && body.length) defined.set(n["@id"], (defined.get(n["@id"]) || 0) + 1);
+    for (const v of Object.values(n)) if (v && typeof v === "object") visit(v);
+  };
+  ld.forEach((txt, i) => {
+    try { visit(JSON.parse(txt)); } catch (e) { ldErr.push(`block ${i + 1} is not valid JSON (${String(e.message).slice(0, 60)})`); }
+  });
+  for (const [id, c] of defined) if (c > 1) ldErr.push(`${id} is defined ${c} times: keep one node, extend it instead`);
+  if (!ld.length) {
+    console.log("SKIP structured data: none on this page (a business site needs it: references/seo-schema.md)");
+  } else {
+    const ldOk = ldErr.length === 0;
+    if (!ldOk) failures++;
+    console.log(`${ldOk ? "PASS" : "FAIL"} structured data: ${ld.length} block(s)` +
+      (ldOk ? `, types ${[...types].join(", ")}` : `:\n  ${ldErr.join("\n  ")}`));
+  }
   await page.close();
 }
 

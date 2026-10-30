@@ -36,6 +36,9 @@ Every build ships with a responsive sweep and a measured verification pass
   performance budget (instancing, mesh caps, 3-point lighting).
 - **Scroll-film sites** - the page as one continuous cinematic shot, scrubbed
   by scroll (that's the AERIE demo above).
+- **Brand videos from the same world** - films, logo stings, explainers and
+  social clips written as code and rendered frame-exact to MP4, no HyperFrames
+  needed.
 
 ## What's inside
 
@@ -48,8 +51,15 @@ references/motion-patterns.md     8 production-tested techniques, ready to port
 references/perf-playbook.md       jank sources and fixes (rAF deltas, max < 50ms)
 references/asset-pipeline.md      imagery sourcing, budgets, favicon + OG card checklist
 references/rtl-hebrew.md          Hebrew/RTL: font pairings, bidi rules, mirrored motion
+references/magicui.md             Magic UI: 75+ components by job, brand pairings, vanilla ports, LCP/CLS laws
+references/kitchen.md             the Kitchen: 15 tactile components by job, tested vanilla recipes, license rule
+references/kitchen-demo.html      every Kitchen recipe running live (open it in a browser)
+references/opus-videos.md         code-to-video: the Opus 5.5 prompt library, brief template, render contract
+references/video-starter.html     a 6s brand sting that implements the render contract
+references/seo-schema.md          JSON-LD for local businesses (template + laws) and the SEO launch checklist
 scripts/verify.mjs                full sweep: 5 viewports, RTL-safe overflow, jank probe, screenshots
 scripts/capture-og.mjs            real-hero OG card at 1200x630 with size budget
+scripts/render-video.mjs          HTML animation to frame-exact MP4 (puppeteer + ffmpeg), with audio mux
 ```
 
 ## Example gallery
@@ -82,6 +92,45 @@ conversion rules for porting them into a site. Sources stay example-reference
 only: never committed, never pasted verbatim. No sources? The same techniques
 ship distilled in [`references/motion-patterns.md`](references/motion-patterns.md).
 
+### Modern components: Magic UI
+
+[Magic UI](https://magicui.design) ([source](https://github.com/magicuidesign/magicui),
+MIT) adds a modern component vocabulary on top: border beams, animated beams
+between elements, flickering grids, shiny and morphing text, marquees, globes,
+device mockups. [`references/magicui.md`](references/magicui.md) catalogs every
+component by job with brand pairings, decides when to install versus port
+(SEO-critical pages port to vanilla CSS/TS so every word stays in static HTML),
+and ships the vanilla ports and layout-shift lessons from a production page
+that kept Lighthouse at 100 across the board with ten effects running.
+
+### Tactile components: the Kitchen
+
+[The Kitchen](https://www.dqnamo.com/kitchen) by dqnamo is a set of crafted
+interaction studies: a pushable button, a perforated ticket, a postage stamp, a
+receipt that prints, holographic foil, a card fan, hold-to-confirm, a signature
+that draws itself. Where Magic UI adds light, these add material.
+[`references/kitchen.md`](references/kitchen.md) catalogs all 15 by job and
+brand mood and carries this skill's own vanilla recipes. They are rebuilt from
+the techniques, because the Kitchen's source has no license.
+[`references/kitchen-demo.html`](references/kitchen-demo.html) runs every recipe
+live.
+
+### Videos from code, not only HyperFrames
+
+[awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos)
+collects 700+ prompts behind viral videos that Claude Opus 5.5 wrote as code.
+[`references/opus-videos.md`](references/opus-videos.md) turns it into a
+working path:
+- Starting points by job.
+- The prompt anatomy that makes them good.
+- A brief template filled from the site's own art direction.
+- A small render contract (`__duration`, `__seek(t)`, `__ready`).
+
+`scripts/render-video.mjs` renders any page that implements the contract to a
+frame-exact MP4, and
+[`references/video-starter.html`](references/video-starter.html) is a working
+example. The same composition can also run live on the site.
+
 ## Installation
 
 Copy (or clone) this repository into your Claude Code skills directory:
@@ -100,8 +149,9 @@ No API keys, accounts, or extra dependencies are required to use the skill
 itself. The sites it generates use plain Vite + React + TypeScript; Claude
 installs those per-project as needed.
 
-One optional setup, needed only for the verification scripts
-(`scripts/verify.mjs`, `scripts/capture-og.mjs`):
+One optional setup, needed only for the scripts (`scripts/verify.mjs`,
+`scripts/capture-og.mjs`, `scripts/render-video.mjs`). They use a local Chrome,
+and video rendering also needs [ffmpeg](https://ffmpeg.org) on your PATH:
 
 ```bash
 cd ~/.claude/skills/scrolling-web-site-with-vidtsx/scripts && npm install
@@ -115,6 +165,8 @@ Just ask, in plain language, in any Claude Code session:
 > "I want a scrolling website with 3D, interview me first"
 > "Make a motion site like the vidtsx.com examples"
 > "Build me a Hebrew site for my law firm" (full RTL, real Hebrew font pairing)
+> "Make a 15-second launch video for the site we just built"
+> "Use tactile Kitchen components for the booking flow"
 
 Claude will:
 
