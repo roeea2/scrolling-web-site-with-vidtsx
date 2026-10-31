@@ -1,21 +1,20 @@
 ---
 name: scrolling-web-site-with-vidtsx
 description: >-
-  Interview-first studio for premium animated websites in TSX (React +
-  TypeScript + Vite) and code-rendered brand videos. Interviews step by step,
-  pitches 2-3 named concepts, art-directs the world, builds 2D motion, 3D
-  (react-three-fiber) or a scroll-film, and never ships without the
-  scripts/verify.mjs sweep. Motion sources: 26 cataloged VidTSX
-  compositions, Magic UI (beams, grids, shiny text, marquees) and tactile
-  Kitchen components (pushable buttons, tickets, stamps, receipt printers,
-  holographic foil) as vanilla recipes. Turns the same art direction into
-  videos (brand films, explainers, logo stings) from the Opus 5.5 prompt
-  library, rendered to MP4 by scripts/render-video.mjs. Hebrew/RTL,
-  LocalBusiness JSON-LD, SEO checklist. Trigger on "build me
-  a site in tsx", "animated react site", "vidtsx site", "3D landing page",
-  "Hebrew site", "magic ui", "kitchen components", "brand video in code",
-  "html to mp4", or any premium animated React/TSX website. NOT for plain
-  static brochure pages or slide decks.
+  Interview-first studio for premium animated websites and landing pages in
+  TSX (React + TypeScript + Vite), plus code-rendered brand videos.
+  Interviews, pitches 2-3 named concepts, writes a precise build spec, builds
+  2D motion, 3D (react-three-fiber), cinematic video heroes or a
+  scroll-film, then scores its own screenshots and fixes until they clear the
+  bar. Bakes in SEO, GEO (being cited by AI answers), Core Web Vitals and
+  agent readiness, proven by scripts/verify.mjs. Motion sources: VidTSX
+  compositions, Magic UI, tactile Kitchen components and cinematic
+  techniques, all as vanilla recipes. Turns the art direction into brand
+  films and logo stings rendered to MP4 by scripts/render-video.mjs.
+  Hebrew/RTL, LocalBusiness JSON-LD. Trigger on "build me a site in tsx",
+  "landing page", "animated react site", "3D landing page", "Hebrew site",
+  "magic ui", "kitchen components", "SEO/GEO for my site", "brand video in
+  code", "html to mp4", or any premium animated website. NOT for slide decks.
 ---
 
 # Scrolling Web Site with VidTSX
@@ -66,6 +65,32 @@ recipes for 14 of them, and the license rule: the source repo has no LICENSE,
 so default to the recipes. `references/kitchen-demo.html` runs every recipe
 live, so open it to show a client. Pick 2-4 from one material world.
 
+**Cinematic techniques and landing craft:** adapted from the MIT parts of
+[MotionSites Web Builder](https://github.com/Motionsites-AI/claude-skill).
+- `references/cinematic-techniques.md`: 11 signature recipes this skill lacked,
+  rewritten to its laws:
+  - a poster-first video hero, seamless loops, text over media;
+  - a pointer-scrubbed turntable, liquid glass, an LCP-safe focus-in headline;
+  - a spotlight lens, a ghost word behind a cut-out, a depth carousel;
+  - a layered scroll story, a GLB product hero.
+- `references/landing-craft.md`: the precise build spec, taste rules with real
+  numbers, the anatomy of a landing page that converts, and the look-and-fix
+  loop that scores the screenshots.
+
+Their example prompts and media are not MIT and are not used. Neither is their
+paid tier: everything here is free and self-hosted.
+
+**Search, AI answers and performance:** `references/seo-geo.md`, distilled from
+[claude-seo](https://github.com/AgriciDaniel/claude-seo) (MIT), is what to bake
+in while building:
+- the prerendered HTML that AI crawlers read;
+- answer-first passages;
+- the AI crawler table and an honest llms.txt verdict;
+- the LCP subparts, fonts with no shift, agent readiness;
+- which schema still earns a rich result.
+
+`scripts/verify.mjs` proves it. License notices are in `THIRD_PARTY_NOTICES.md`.
+
 **Videos from the same world (not only HyperFrames):** the
 [awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos)
 library holds 700+ prompts behind viral Opus 5.5 videos, written as code
@@ -114,6 +139,10 @@ make well. Ask:
      trade: a pushable "Call now", a magnetic "send a photo" drop zone, a
      receipt-printer quote confirmation). Open `references/kitchen-demo.html`
      so the user can try them.
+   - *Cinematic*: one signature technique from
+     `references/cinematic-techniques.md` (for a trade: a spotlight lens over
+     the hidden wiring or pipes, a poster-first video hero of real work, a
+     ghost word behind the cut-out tool or product).
    - If the user is unsure, offer 3-4 concrete starting points from
      `references/example-gallery.md` (a logo reveal, a countdown, a data
      story, a 3D hero) instead of an open-ended question. Better: when the
@@ -131,8 +160,14 @@ make well. Ask:
    and show their live remakes. Skip it if the user only wants the site.
 
 Then **pitch 2-3 named concepts** with concrete what-you-see walkthroughs
-(narrate the scroll, not a thesis one-liner). Mark one "(Recommended)". Build
-only after a concept is chosen; if the user says "you choose", take the
+(narrate the scroll, not a thesis one-liner). Mark one "(Recommended)". Each
+concept names its ONE signature (the thing a visitor would screenshot), 2-4
+quiet supports, and at most one heavy technique (WebGL, a long pinned story).
+No concept may be the default skeleton (hero, 3 stats, 3 steps, 3 cards, FAQ,
+dark CTA band), and each must pass the swap test: with a competitor's name
+swapped in, the page must stop being true (`references/landing-craft.md`
+section 5).
+Build only after a concept is chosen; if the user says "you choose", take the
 recommended one and go.
 
 ## STEP 1 - Art-direct the world
@@ -144,6 +179,25 @@ look like the same site. For Hebrew/RTL builds, choose from the Hebrew
 pairings in `references/rtl-hebrew.md` (Karantina + Rubik, Secular One +
 Assistant, Frank Ruhl Libre + Heebo, Suez One + Varela Round) - never Heebo
 for both display and body.
+
+**Media order:**
+1. The client's own photos and footage.
+2. Generated media, using the still and motion briefs in
+   `references/landing-craft.md`: check frames at 0, 50 and 100% and that the
+   edge colour equals the page background. Paired stills (a lens, before and
+   after) come from one image plus an edit pass, so they stay aligned.
+3. Otherwise, a type-led page.
+
+Never stock CDNs or grey boxes. AI images never stand in for "our real work".
+
+**Then write the build spec** (`references/landing-craft.md` section 2):
+- Every element gets real values: fonts, tokens, `clamp()` sizes, tracking,
+  durations and easings, the z-ladder and the five verify viewports.
+- It names the LCP element, includes the real copy, and gives a repo path and
+  weight budget for every asset.
+- Run its consistency pass before any code.
+
+STEP 2 builds exactly the spec. A change of mind goes back into the spec first.
 
 ## STEP 2 - Build (TSX law)
 
@@ -186,6 +240,14 @@ project's existing system). Key laws, in full in
   - A loader never gates LCP.
   - Never put a hold-to-confirm on the primary CTA.
   - Do not copy Kitchen source into a public repo: it has no license.
+- Cinematic techniques: build from the recipes in
+  `references/cinematic-techniques.md`.
+  - One signature per page.
+  - Its per-frame work joins the site's one rAF loop, never a second loop.
+  - Browser APIs (`matchMedia`, observers, `Image`) only inside effects, or the
+    prerender crashes.
+  - A video hero's poster `<img>` is the LCP. No video byte loads before
+    `load` plus idle, and Save-Data, 2g and reduced motion never download it.
 - Performance is a design constraint: before shipping, the build must pass
   the jank bar in `references/perf-playbook.md` (rAF deltas, max < 50ms).
 - Structured data for every real business: the JSON-LD `@graph` in
@@ -195,7 +257,29 @@ project's existing system). Key laws, in full in
   - Built from one `ROOT` constant.
   - It must match the visible page and the Google Business Profile.
   - `FAQPage` is generated from the visible FAQ, and no reviews or claims are
-    ever invented.
+    ever invented. Google retired FAQ rich results on 2026-05-07: keep the
+    markup if it is accurate, but never promise a FAQ result.
+- **Search and AI answers from the first commit** (`references/seo-geo.md`):
+  - Every word, the title, description, canonical, robots and JSON-LD are in
+    the prerendered HTML: most AI crawlers run no JavaScript. One head per
+    route. Count hydration mismatches: `hydrateRoot(root, app,
+    { onRecoverableError })` increments `window.__hydrateErrors`.
+  - Answer first: each service gets a section under a question heading whose
+    first 40-60 words answer it, with client-confirmed facts. The answer and
+    the offer come before a long cinematic scroll.
+  - The hero paints from HTML and CSS alone: the LCP image is an `<img>` in
+    the markup with `fetchpriority="high"`, never lazy; an entrance animation
+    decorates the h1, never delays its first paint.
+  - A static `robots.txt` that admits search and AI search crawlers
+    (Googlebot, Bingbot, OAI-SearchBot, Claude-SearchBot, PerplexityBot) with
+    an absolute `Sitemap:` line. A training opt-out is the client's call.
+  - No catch-all rewrite: unknown paths return 404. No `llms.txt` on a local
+    business site (Google ignores it). Never `pushState` on scroll.
+  - Controls are native and named, nothing focusable hides inside
+    `aria-hidden`, and decorative layers get `pointer-events: none`: that is
+    what browsing agents and screen readers both act on.
+  - Only free tools and data: nothing that costs the user or the client money
+    goes on a site or into the workflow.
 
 ## STEP 3 - The responsive law (never skip)
 
@@ -253,14 +337,41 @@ screenshots; run it against the served production build.
   JPEG/PNG even on an all-WebP site: WhatsApp and LinkedIn render WebP
   previews unreliably. `scripts/verify.mjs` FAILS the build if a required tag
   is missing or the og:image does not resolve - do not ship around it.
+- **Look and fix, then score.** When the sweep passes, open the screenshots
+  (including `laptop-00-early.jpg`) and score them on the 10-criterion rubric
+  in `references/landing-craft.md` section 5.
+  - First the swap test (a gate, not a score), then the bar: an average of
+    8+, nothing under 7. A self-score is not the client's verdict: when the
+    client says "generic" or "AI slop", redo the concept, do not polish it.
+  - Fix the three weakest with concrete value changes, re-run the sweep, and
+    score again: up to 3 rounds.
+  - Report the final score table next to the deploy URL and the audit
+    verdict. If the bar is still missed, say what would lift it (real
+    footage, real proof).
 - **Defects found in verification**: fix them in parallel passes, one focused
   pass per defect, each with a precise brief: the defect, the viewport, the
   programmatic check that proves it, the acceptance bar, and screenshot proof
   after the fix. Then re-run the full sweep: a fix that breaks another
   viewport is not a fix.
 - **Structured data**: `scripts/verify.mjs` parses every JSON-LD block and FAILS
-  on invalid JSON or an `@id` defined twice. Then check the live URL in Google's
-  Rich Results Test.
+  on invalid JSON, an `@id` defined twice, a telephone the page does not link
+  to, or a FAQ question that is not visible. Then check the live URL in
+  Google's Rich Results Test.
+- **SEO, GEO and performance**: the same sweep reads the page four ways and
+  FAILS on what breaks search or agents:
+  - The raw HTML before JavaScript (an empty h1 fails), and raw against
+    rendered (canonical, robots or JSON-LD that change after JS fail).
+  - Canonical and indexability, robots.txt read the way crawlers read it, the
+    sitemap's URLs, soft 404s, hreflang, broken internal links.
+  - Unnamed controls in the accessibility tree, and controls covered by an
+    invisible layer at 390px (taps miss them).
+  - A throttled phone load: LCP with its four subparts, CLS session windows,
+    image weight.
+  WARN lines are judgement calls; read them, they never fail the build.
+- **Test only what you own.** Point the sweep, screenshots and Lighthouse at
+  a local build, a preview or the demo copy, never at a client's live
+  production domain: automated loads fire the client's analytics and ad
+  pixels and pollute their data.
 - **Security gate before any deploy**: run the exposure audit (secrets, PII,
   personal emails, EXIF, local paths) and only publish on PASS.
 - Deploy a lean build dir to the user's Vercel; report the production URL and
@@ -272,6 +383,11 @@ screenshots; run it against the served production build.
   - Bing Webmaster Tools.
   - An IndexNow ping from the deploy script.
   - Links in from the Google Business Profile and socials.
+  - Search Console's "Search generative AI" control left on Include, Bing
+    Places with the same name, phone and area, and Lighthouse's agentic
+    category at 2/2 (`npx lighthouse@latest <url>
+    --only-categories=agentic-browsing`). The full list is in
+    `references/seo-geo.md` section 8.
 
 ## Video path - animations and films from the same world (optional)
 

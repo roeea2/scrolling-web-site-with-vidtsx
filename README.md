@@ -36,6 +36,13 @@ Every build ships with a responsive sweep and a measured verification pass
   performance budget (instancing, mesh caps, 3-point lighting).
 - **Scroll-film sites** - the page as one continuous cinematic shot, scrubbed
   by scroll (that's the AERIE demo above).
+- **Landing pages that convert** - a written build spec before any code, one
+  cinematic signature (a poster-first video hero, a spotlight lens, a depth
+  carousel, a GLB product hero), and a screenshot score-and-fix loop that
+  does not stop until the page averages 8/10 with nothing under 7.
+- **Built for search and AI answers** - prerendered HTML that AI crawlers can
+  read, answer-first passages, the right robots.txt for AI search crawlers,
+  Core Web Vitals and agent readiness, all checked by the verify sweep.
 - **Brand videos from the same world** - films, logo stings, explainers and
   social clips written as code and rendered frame-exact to MP4, no HyperFrames
   needed.
@@ -57,7 +64,10 @@ references/kitchen-demo.html      every Kitchen recipe running live (open it in 
 references/opus-videos.md         code-to-video: the Opus 5.5 prompt library, brief template, render contract
 references/video-starter.html     a 6s brand sting that implements the render contract
 references/seo-schema.md          JSON-LD for local businesses (template + laws) and the SEO launch checklist
-scripts/verify.mjs                full sweep: 5 viewports, RTL-safe overflow, jank probe, screenshots
+references/seo-geo.md             SEO, GEO (AI answers), Core Web Vitals and agent readiness to bake in while building
+references/landing-craft.md       the build spec, taste rules with numbers, conversion anatomy, the score-and-fix loop
+references/cinematic-techniques.md 11 signature recipes: video hero, spotlight lens, depth carousel, GLB hero, more
+scripts/verify.mjs                full sweep: 5 viewports, RTL-safe overflow, jank, screenshots, SEO/GEO, LCP/CLS, a11y tree
 scripts/capture-og.mjs            real-hero OG card at 1200x630 with size budget
 scripts/render-video.mjs          HTML animation to frame-exact MP4 (puppeteer + ffmpeg), with audio mux
 ```
@@ -131,6 +141,33 @@ frame-exact MP4, and
 [`references/video-starter.html`](references/video-starter.html) is a working
 example. The same composition can also run live on the site.
 
+### Landing craft and cinematic techniques
+
+[MotionSites Web Builder](https://github.com/Motionsites-AI/claude-skill)
+showed that average AI pages come from a vague plan, no real media, and
+nobody looking at the result. Its MIT-licensed method is adapted here:
+[`references/landing-craft.md`](references/landing-craft.md) (the build spec,
+taste rules with numbers, the score-and-fix rubric) and
+[`references/cinematic-techniques.md`](references/cinematic-techniques.md)
+(11 signature techniques, rewritten so the headline stays in the HTML, the
+LCP stays fast and RTL mirrors). Its example prompts, media and paid tier are
+not used: everything is free and self-hosted.
+
+### Search, AI answers and performance
+
+[claude-seo](https://github.com/AgriciDaniel/claude-seo) (MIT) is distilled
+into [`references/seo-geo.md`](references/seo-geo.md): what to build in so a
+site ranks, gets cited by AI answers (Google AI Overviews, ChatGPT,
+Perplexity, Claude) and passes Core Web Vitals, with every claim traced to its
+source and the hype called out. `scripts/verify.mjs` checks it on every build:
+- the raw HTML before JavaScript;
+- robots.txt read the way crawlers read it, the sitemap and soft 404s;
+- unnamed controls and covered tap targets;
+- a throttled phone load with the LCP breakdown.
+
+Only free tools. License notices are in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
 ## Installation
 
 Copy (or clone) this repository into your Claude Code skills directory:
@@ -167,6 +204,7 @@ Just ask, in plain language, in any Claude Code session:
 > "Build me a Hebrew site for my law firm" (full RTL, real Hebrew font pairing)
 > "Make a 15-second launch video for the site we just built"
 > "Use tactile Kitchen components for the booking flow"
+> "Build a campaign landing page with a video hero for my clinic"
 
 Claude will:
 

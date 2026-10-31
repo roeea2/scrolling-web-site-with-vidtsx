@@ -33,6 +33,14 @@ reveal) alongside or inside the site:
 - **The tick discipline**: one rAF loop owns per-frame updates and writes to
   DOM nodes via refs. React state changes only on discrete events (section
   enter, menu open). A `setState` per scroll tick is a rewrite, not a tweak.
+- **One loop for every source**: Magic UI ports, Kitchen recipes and the
+  cinematic recipes all subscribe to the site's single rAF loop (a shared
+  `onFrame`/`addTick` ticker that sleeps when nothing moves). A recipe that
+  brings its own `requestAnimationFrame` is rewired, never added.
+- **Browser APIs only inside effects**: `matchMedia`, observers, `Image`,
+  `navigator` and `window` sizes are read in `useEffect` (or a `mountX(el)`
+  called from one). At module scope they crash the build-time prerender, and
+  in render they cause hydration mismatches.
 - **Scroll progress**: `p = clamp(-rect.top / (rect.height - innerHeight))`
   on a tall driver with a sticky stage. Lerp toward targets
   (`current += (target - current) * 0.12..0.16`) for weight.

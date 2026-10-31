@@ -14,7 +14,7 @@ one when a specific one exists:
 | Business | Type |
 |---|---|
 | Electrician, plumber, roofer, HVAC, locksmith, painter | `Electrician`, `Plumber`, `RoofingContractor`, `HVACBusiness`, `Locksmith`, `HousePainter` (all `HomeAndConstructionBusiness`) |
-| Lawyer, accountant | `LegalService` / `Attorney`, `AccountingService` |
+| Lawyer, accountant | `LegalService` (schema.org deprecated `Attorney`), `AccountingService` |
 | Clinic, dentist | `MedicalClinic`, `Dentist` |
 | Barber, salon, spa | `BarberShop`, `HairSalon`, `DaySpa` |
 | Restaurant, cafe, bakery | `Restaurant`, `CafeOrCoffeeShop`, `Bakery` |
@@ -90,7 +90,9 @@ business node has a stable `@id` (`<root>#business`) that every other node point
 </script>
 ```
 
-Add a `FAQPage` node when the page has a visible FAQ (law 5). Add `openingHoursSpecification`
+Add a `FAQPage` node when the page has a visible FAQ (law 5). Google retired FAQ rich results
+on 2026-05-07, so it earns no rich result: keep it only because it is accurate and other
+consumers read it (`seo-geo.md` section 7). Add `openingHoursSpecification`
 only with real hours from the client.
 
 ## 3. The laws
