@@ -67,6 +67,8 @@ references/seo-schema.md          JSON-LD for local businesses (template + laws)
 references/seo-geo.md             SEO, GEO (AI answers), Core Web Vitals and agent readiness to bake in while building
 references/landing-craft.md       the build spec, taste rules with numbers, conversion anatomy, the score-and-fix loop
 references/cinematic-techniques.md 11 signature recipes: video hero, spotlight lens, depth carousel, GLB hero, more
+references/code-looks.md          looks in code: honest thermal false colour, halftone print, paper collage, boil
+references/film-direction.md      directing a code film: carry, rhythm, reads timed for Hebrew, camera, shutter blur
 scripts/verify.mjs                full sweep: 5 viewports, RTL-safe overflow, jank, screenshots, SEO/GEO, LCP/CLS, a11y tree
 scripts/capture-og.mjs            real-hero OG card at 1200x630 with size budget
 scripts/render-video.mjs          HTML animation to frame-exact MP4 (puppeteer + ffmpeg), with audio mux
@@ -152,6 +154,30 @@ taste rules with numbers, the score-and-fix rubric) and
 (11 signature techniques, rewritten so the headline stays in the HTML, the
 LCP stays fast and RTL mirrors). Its example prompts, media and paid tier are
 not used: everything is free and self-hosted.
+
+### Looks in code and film direction
+
+[`references/code-looks.md`](references/code-looks.md) gives a page or film
+one material look, drawn in code at no cost:
+- thermal false colour that respects the physics (a damp patch reads cooler; only a hot
+  line glows);
+- halftone print with overprint;
+- a paper collage that assembles from empty;
+- line art that boils.
+
+[`references/film-direction.md`](references/film-direction.md) makes a code
+film read as one piece instead of a slideshow:
+- something carried across every boundary;
+- rhythm in numbers, and reads timed for the viewer (Hebrew included);
+- an operated camera, transitions made of the medium;
+- free shutter blur.
+
+Adapted from the MIT parts of
+[gbro-collage-broll](https://github.com/pyang5166/gbro-collage-broll),
+[ClaudeAnimationBase](https://github.com/JohnHeibel/ClaudeAnimationBase) and
+[lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar). Ideas from
+[onetake](https://github.com/feitangyuan/onetake) are written from scratch, since it
+is noncommercial.
 
 ### Search, AI answers and performance
 

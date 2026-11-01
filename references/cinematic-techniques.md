@@ -100,15 +100,25 @@ export function mountPlate(root: HTMLElement) {
 ```bash
 ffmpeg -i src.mp4 -an -vf "scale=1920:-2,fps=24" -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -movflags +faststart public/media/hero.mp4     # 8-10 s, <= 4 MB
 ffmpeg -i src.mp4 -an -vf "scale=960:-2,fps=24" -c:v libx264 -crf 28 -preset slow -pix_fmt yuv420p -movflags +faststart public/media/hero-960.mp4 # <= 1.5 MB
-ffmpeg -i public/media/hero.mp4 -frames:v 1 -c:v libwebp -quality 80 public/media/hero-poster.webp   # frame 0, so the swap is invisible
+ffmpeg -i public/media/hero.mp4 -frames:v 1 hero-poster.png && cwebp -q 80 -metadata none hero-poster.png -o public/media/hero-poster.webp   # frame 0, so the swap is invisible; many ffmpeg builds lack the libwebp encoder
 ```
 - **Preload policy:** `preload="none"`; the hero `src` is set after `load` plus idle, so no
   video byte competes with the poster, CSS or fonts. Below-fold clips get theirs from the
   shared IntersectionObserver at `rootMargin: 200px`. One playing video per viewport. No
   HLS: a self-hosted 6-12 s MP4 with faststart needs no player.
-- **LCP and autoplay:** the poster `<img>` is the LCP, preloaded in `index.html` (one
+- **LCP and autoplay:** preload the poster `<img>` in `index.html` (one
   `rel=preload as=image` per `media` query); unlike the `poster` attribute it takes
-  `<picture>`. No `autoplay` attribute; `v.muted = true` before `play()`. Copy stays static
+  `<picture>`.
+- **But on a full-viewport plate, the poster is not the LCP.** Chrome skips an image
+  covering the whole viewport as a background (measured on a live page, 2026-10-31).
+  - The LCP becomes the largest text block, often the sub-paragraph on phones, so that
+    text paints at the first frame: an opacity floor and transform, never from 0, never
+    an animated blur.
+  - On phones, the playing video then counts as a new, later LCP (3.3 s against a 1.5 s
+    first paint). Below 768px, skip the file and crossfade the poster with one still
+    from the clip in CSS (opacity keyframes in the clip's own rhythm). It is the same
+    effect, with no extra LCP and no mobile data. Prove it with an LCP observer on the
+    deployed URL. No `autoplay` attribute; `v.muted = true` before `play()`. Copy stays static
   HTML; phones with busy footage get the plate in-flow under the copy at `aspect-ratio: 4/5`.
 
 ## 2. Seamless loop
@@ -164,7 +174,8 @@ Markup: `<div className="turn" data-frames="/media/turn/" data-count="36">` hold
 
 ```bash
 # a 12 s, 24 fps 360-degree turn (shot on a turntable or generated) -> every 8th frame -> 36 frames
-ffmpeg -i turn.mp4 -vf "select='not(mod(n\,8))',scale=1280:-2" -fps_mode vfr -start_number 0 -c:v libwebp -quality 72 public/media/turn/%02d.webp
+ffmpeg -i turn.mp4 -vf "select='not(mod(n\,8))',scale=1280:-2" -fps_mode vfr -start_number 0 turn-%02d.png
+for f in turn-*.png; do n=${f#turn-}; cwebp -quiet -q 72 -metadata none "$f" -o "public/media/turn/${n%.png}.webp"; done   # cwebp: many ffmpeg builds lack libwebp
 ```
 ```css
 .turn{position:relative;aspect-ratio:4/3;touch-action:pan-y;cursor:ew-resize}  .turn.is-live>canvas{opacity:1}
@@ -414,7 +425,7 @@ export function mountStory(sec: HTMLElement) {
   No `overflow: hidden` on an ancestor of the sticky stage: use `overflow-x: clip`.
 - **Assets:** one generated scene cut into planes with a local background remover, WebP
   alpha at ~2x viewport width, <= 400 KB each; bake the blur (`ffmpeg -i st-bg.webp -vf
-  gblur=sigma=14 st-bg-blur.webp`). Phones: runway x0.7. Look at verify's `-mid` frame.
+  gblur=sigma=14 st-bg-blur.png`, then `cwebp -q 80 st-bg-blur.png -o st-bg-blur.webp`). Phones: runway x0.7. Look at verify's `-mid` frame.
 
 ## 11. GLB product hero
 

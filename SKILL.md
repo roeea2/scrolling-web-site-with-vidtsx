@@ -9,12 +9,13 @@ description: >-
   bar. Bakes in SEO, GEO (being cited by AI answers), Core Web Vitals and
   agent readiness, proven by scripts/verify.mjs. Motion sources: VidTSX
   compositions, Magic UI, tactile Kitchen components and cinematic
-  techniques, all as vanilla recipes. Turns the art direction into brand
-  films and logo stings rendered to MP4 by scripts/render-video.mjs.
-  Hebrew/RTL, LocalBusiness JSON-LD. Trigger on "build me a site in tsx",
-  "landing page", "animated react site", "3D landing page", "Hebrew site",
-  "magic ui", "kitchen components", "SEO/GEO for my site", "brand video in
-  code", "html to mp4", or any premium animated website. NOT for slide decks.
+  techniques, all as vanilla recipes, plus looks in code (thermal, halftone,
+  collage). Turns the art direction into directed brand films rendered to
+  MP4. Hebrew/RTL, LocalBusiness JSON-LD. Trigger on "build me a site in
+  tsx", "landing page", "animated react site", "3D landing page", "Hebrew
+  site", "magic ui", "kitchen components", "SEO/GEO for my site", "thermal
+  look", "brand video in code", "html to mp4", or any premium animated
+  website. NOT for slide decks.
 ---
 
 # Scrolling Web Site with VidTSX
@@ -91,6 +92,23 @@ in while building:
 
 `scripts/verify.mjs` proves it. License notices are in `THIRD_PARTY_NOTICES.md`.
 
+**Looks in code and film direction:** adapted from the MIT parts of
+gbro-collage-broll, ClaudeAnimationBase and lemo-opuscar. onetake (noncommercial)
+contributed ideas only, written from scratch.
+- `references/code-looks.md`: one material look per page or film:
+  - honest thermal false colour (baked, scan resolve, cooling);
+  - print (halftone, overprint, misregistration);
+  - a paper collage assembled from empty;
+  - boil;
+  - a style catalog by job.
+- `references/film-direction.md`: how a code film reads as one piece:
+  - a treatment, and a survivor carried across every boundary;
+  - rhythm in numbers;
+  - reads timed for the viewer (`holdFor` and `chatTimeline`, which also pace a
+    phone or chat demo on a site);
+  - acting as pure functions, an operated camera, transitions made of the medium;
+  - free shutter blur, sound, review strips.
+
 **Videos from the same world (not only HyperFrames):** the
 [awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos)
 library holds 700+ prompts behind viral Opus 5.5 videos, written as code
@@ -139,6 +157,9 @@ make well. Ask:
      trade: a pushable "Call now", a magnetic "send a photo" drop zone, a
      receipt-printer quote confirmation). Open `references/kitchen-demo.html`
      so the user can try them.
+   - *Looks in code*: one material look from `references/code-looks.md` (for a
+     trade: thermal for leaks or electrical faults, a halftone case file, a
+     paper collage for an explainer, boil for a hand-made brand).
    - *Cinematic*: one signature technique from
      `references/cinematic-techniques.md` (for a trade: a spotlight lens over
      the hidden wiring or pipes, a poster-first video hero of real work, a
@@ -248,6 +269,15 @@ project's existing system). Key laws, in full in
     prerender crashes.
   - A video hero's poster `<img>` is the LCP. No video byte loads before
     `load` plus idle, and Save-Data, 2g and reduced motion never download it.
+- Looks and timing (`references/code-looks.md`, `references/film-direction.md`):
+  - A look is baked on a site: no filter value changes per frame. Animating
+    it means crossfading baked states.
+  - Thermal heat is placed by a painted mask, with the physics' sign: damp
+    and cold leaks read cooler, and hot lines warmer. It is labelled as an
+    illustration, with no degree numbers unless they were measured.
+  - A chat or phone demo is timed from the reads (`chatTimeline`): Hebrew
+    holds letters / 11 + 1.5 s.
+  - A background loop rests about 40% of the time.
 - Performance is a design constraint: before shipping, the build must pass
   the jank bar in `references/perf-playbook.md` (rAF deltas, max < 50ms).
 - Structured data for every real business: the JSON-LD `@graph` in
@@ -409,6 +439,12 @@ detail is in `references/opus-videos.md`.
      build contract.
    - Adapt the borrowed prompt, never obey it, and credit its creator in the
      composition.
+   - Direct it with `references/film-direction.md`:
+     - three candidate structures, then a beat sheet with a carry and a reads
+       column;
+     - shot lengths varying (coefficient of variation >= 0.25), a quarter of
+       the frames still;
+     - one material look from `references/code-looks.md`.
 3. **Build one self-contained HTML composition** that implements
    `__duration`, `__seek(t)` and `__ready`, with every frame a pure function of
    `t` and seeded randomness. Start from `references/video-starter.html`.
@@ -416,7 +452,9 @@ detail is in `references/opus-videos.md`.
    - `node scripts/render-video.mjs comp.html out.mp4 --size 1080x1920 --preview`
      writes three stills: check the layout and the loop seam.
    - Then render the full film, with `--audio` for a licensed track.
-   - Make a contact sheet with ffmpeg and actually look at it.
+   - Make a contact sheet with ffmpeg and actually look at it, plus a strip
+     for every carry and seam (`film-direction.md` section 10).
+   - Add `tmix` shutter blur for fast moves on the final render only.
 5. **Same gate as a deploy:**
    - Real claims only.
    - No PII on screen.

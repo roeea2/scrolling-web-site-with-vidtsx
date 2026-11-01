@@ -50,7 +50,8 @@ Vite + React + TS, prerendered to static HTML, plain CSS custom properties.
 Libraries: {{none | name@exact.version}}, pinned and bundled, MIT/OFL/Apache only. No CDN
 scripts, paid fonts, icon sets, widgets or SaaS embeds.
 Budgets: JS {{<= 120 KB gz for a 2D page}}, poster {{<= 250 KB}}, hero video {{<= 4 MB}},
-page images {{<= 2 MB}}. LCP element: {{named, e.g. the hero poster img}}.
+page images {{<= 2 MB}}. LCP element: {{named, e.g. the hero poster img; on a
+full-viewport plate Chrome skips the poster, so name the largest text block instead}}.
 
 ## 2. Fonts (self-hosted woff2, Google Fonts families under OFL)
 | Role | Family | Weights | Used on |
